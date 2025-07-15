@@ -32,7 +32,7 @@ CREATE TABLE `usuarios` (
   `nombre` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `tipo` enum('conductor','pasajero') NOT NULL,
+  `tipo` enum('conductor','pasajero','admin',) NOT NULL,
   `sexo` enum('masculino','femenino','otro') DEFAULT NULL,
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -42,8 +42,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `tipo`, `sexo`, `creado_en`) VALUES
-(1, 'Marcods', 'qwdqw@afae', '$2b$10$tFy4nb4KKzfRNMeg/O6FWeK6BoLtVgLIhJwj/wnyaqg.525tn862q', 'pasajero', 'femenino', '2025-06-28 23:57:54'),
-(2, 'Diego', 'contrerasdiego8718@gmail.com', '$2b$10$RfLt8fJLrc9s2KBr7Tl9MuqHZg/priEVKTbCkCad8qGvMtE4MCK6a', 'conductor', 'masculino', '2025-07-05 19:24:23');
+(1, 'admin', 'admin@travely.com', '$2b$10$tFy4nb4KKzfRNMeg/O6FWeK6BoLtVgLIhJwj/wnyaqg.525tn862q', 'admin', 'femenino', '2025-06-28 23:57:54'),
+(2, 'Marcods', 'qwdqw@afae', '$2b$10$tFy4nb4KKzfRNMeg/O6FWeK6BoLtVgLIhJwj/wnyaqg.525tn862q', 'pasajero', 'femenino', '2025-06-28 23:57:54'),
+(3, 'Diego', 'contrerasdiego8718@gmail.com', '$2b$10$RfLt8fJLrc9s2KBr7Tl9MuqHZg/priEVKTbCkCad8qGvMtE4MCK6a', 'conductor', 'masculino', '2025-07-05 19:24:23');
 
 -- --------------------------------------------------------
 
