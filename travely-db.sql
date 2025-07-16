@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 15-07-2025 a las 23:05:18
--- Versión del servidor: 10.4.27-MariaDB
--- Versión de PHP: 8.2.0
+-- Host: 127.0.0.1
+-- Generation Time: Jul 16, 2025 at 08:48 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `travely-db`
+-- Database: `travely-db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `pasajeros`
+-- Table structure for table `pasajeros`
 --
 
 CREATE TABLE `pasajeros` (
@@ -42,21 +42,20 @@ CREATE TABLE `pasajeros` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `ruta`
+-- Table structure for table `ruta`
 --
 
 CREATE TABLE `ruta` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `salida` varchar(100) NOT NULL,
-  `llegada` varchar(100) NOT NULL,
-  `precio` decimal(10,2) NOT NULL
+  `llegada` varchar(100) NOT NULL  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `usuarios`
+-- Table structure for table `usuarios`
 --
 
 CREATE TABLE `usuarios` (
@@ -71,21 +70,23 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `usuarios`
+-- Dumping data for table `usuarios`
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `tipo`, `sexo`, `creado_en`, `estado`) VALUES
-(1, 'admin', 'admin@travely.com', '$2b$10$1/k45Ct6kHZyCxxO1P9Sj.A3of5vg0ZczzRuM82eBtF6YaR9CW2C.', 'admin', 'otro', '2025-07-15 21:04:36', 'activo');
+(1, 'admin', 'admin@travely.com', '$2b$10$1/k45Ct6kHZyCxxO1P9Sj.A3of5vg0ZczzRuM82eBtF6YaR9CW2C.', 'admin', 'otro', '2025-07-15 21:04:36', 'activo'),
+(2, 'conductor', 'conductor@gmail.com', '$2b$10$/nX9yGb8pNCLfVWKPz8MjO0ijLgaBXhvASl9iio0gJi6DGlINudc2', 'conductor', 'masculino', '2025-07-16 14:52:22', 'activo'),
+(3, 'pasajero', 'pasajero@gmail.com', '$2b$10$FRbEAHfNYKstXF188q1EIeSgbi3IOI9yy0Tx5cxeuhyzZOAV3LHpK', 'pasajero', 'masculino', '2025-07-16 15:18:23', 'inactivo');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `vehiculo`
+-- Table structure for table `vehiculo`
 --
 
 CREATE TABLE `vehiculo` (
   `id` int(11) NOT NULL,
-  `tipo` enum('carro','moto','camioneta','bus') NOT NULL,
+  `tipo` varchar(100) NOT NULL,
   `modelo` varchar(100) NOT NULL,
   `marca` varchar(100) NOT NULL,
   `color` varchar(80) NOT NULL,
@@ -95,7 +96,7 @@ CREATE TABLE `vehiculo` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `viajes`
+-- Table structure for table `viajes`
 --
 
 CREATE TABLE `viajes` (
@@ -107,41 +108,42 @@ CREATE TABLE `viajes` (
   `disp_hoy` tinyint(1) NOT NULL DEFAULT 0,
   `inicia_el` datetime NOT NULL,
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `precio` int(100) NOT NULL,
   `id_conductor` int(11) NOT NULL,
   `id_pasajeros` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Índices para tablas volcadas
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `pasajeros`
+-- Indexes for table `pasajeros`
 --
 ALTER TABLE `pasajeros`
-  ADD PRIMARY KEY (`id`);  
+  ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `ruta`
+-- Indexes for table `ruta`
 --
 ALTER TABLE `ruta`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `usuarios`
+-- Indexes for table `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indices de la tabla `vehiculo`
+-- Indexes for table `vehiculo`
 --
 ALTER TABLE `vehiculo`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `viajes`
+-- Indexes for table `viajes`
 --
 ALTER TABLE `viajes`
   ADD PRIMARY KEY (`id`),
@@ -151,39 +153,45 @@ ALTER TABLE `viajes`
   ADD KEY `id_ruta` (`id_ruta`);
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `pasajeros`
+-- AUTO_INCREMENT for table `pasajeros`
 --
 ALTER TABLE `pasajeros`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `usuarios`
+-- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT de la tabla `vehiculo`
+-- AUTO_INCREMENT for table `vehiculo`
 --
 ALTER TABLE `vehiculo`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `viajes`
+-- AUTO_INCREMENT for table `viajes`
 --
 ALTER TABLE `viajes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Restricciones para tablas volcadas
+-- AUTO_INCREMENT for table `ruta`
+--
+ALTER TABLE `ruta`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
 --
 
 --
--- Filtros para la tabla `viajes`
+-- Constraints for table `viajes`
 --
 ALTER TABLE `viajes`
   ADD CONSTRAINT `viajes_ibfk_1` FOREIGN KEY (`id_vehiculo`) REFERENCES `vehiculo` (`id`),

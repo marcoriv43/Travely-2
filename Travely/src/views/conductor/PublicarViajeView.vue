@@ -4,35 +4,23 @@
 
     <form @submit.prevent="publicar" class="form">
 
-      <label>
-        Nombre
-        <input v-model="nuevo.nombre" required />
-      </label>
+      <label>Nombre<input v-model="nuevo.nombre" required /></label>
 
-      <div class="row">
-        <label>
-          Tipo de vehículo
+      <label>
+        Tipo de vehículo
           <template v-if="vehiculos.length > 0">
             <select v-model="nuevo.vehiculo" required>
               <option disabled value="">Seleccione</option>
-              <option v-for="v in vehiculos" :key="v.id || v.placa || v.nombre" :value="v.nombre || v.tipo || v.modelo">
-                {{ v.nombre || v.tipo || v.modelo }} (Capacidad: {{ v.capacidad }})
+              <option v-for="v in vehiculos" :key="v.id || v.tipo || v.modelo || v.marca || v.color || v.capacidad":value="v.id || v.tipo || v.modelo || v.marca || v.color || v.capacidad">
+                {{v.tipo}} {{v.modelo}} {{v.marca}} {{v.color}} (Capacidad: {{ v.capacidad }})
               </option>
             </select>
           </template>
           <template v-else>
-            <div style="display:flex;align-items:center;gap:1rem;">
-              <span style="color:#b00;">No hay vehículos registrados</span>
-              <button type="button" @click="agregarVehiculo">Agregar vehículo</button>
-            </div>
+            <span style="color:#b00;">No hay vehículos registrados</span>
           </template>
-        </label>
-
-        <label>
-          Asientos disponibles
-          <input type="number" v-model.number="nuevo.asientos" min="1" required />
-        </label>
-      </div>
+          <button type="button" @click="abrirModalVehiculo">Agregar vehículo</button>
+      </label>
 
 
       <label>
@@ -40,17 +28,15 @@
         <template v-if="rutas.length > 0">
           <select v-model="nuevo.ruta" required>
             <option disabled value="">Seleccione</option>
-            <option v-for="r in rutas" :key="r.id || r.nombre || r" :value="r.nombre || r">
-              {{ r.nombre || r }}
+            <option v-for="r in rutas" :key="r.id || r.nombre || r.salida || r.llegada" :value="r.id || r.nombre || r.salida || r.llegada">
+              {{ r.nombre }} ({{ r.salida }} - {{ r.llegada }})
             </option>
           </select>
         </template>
         <template v-else>
-          <div style="display:flex;align-items:center;gap:1rem;">
-            <span style="color:#b00;">No hay rutas registradas</span>
-            <button type="button" @click="agregarRuta">Agregar ruta</button>
-          </div>
+          <span style="color:#b00;">No hay rutas registradas</span>                      
         </template>
+        <button type="button" @click="abrirModalRuta">Agregar ruta</button>
       </label>
 
       <label>
@@ -58,7 +44,6 @@
         <input type="number" v-model.number="nuevo.precio" min="1" required />
       </label>
 
-      <!-- Botón “Disponible hoy” -->
       <div class="row">
         <button type="button"
                 :class="{ hoy: nuevo.disponibleHoy }"
@@ -66,13 +51,44 @@
           {{ nuevo.disponibleHoy ? 'Disponible HOY ✅' : 'Disponible hoy' }}
         </button>
 
-        <!-- Publicar -->
         <button type="submit">
           Publicar
         </button>
       </div>
     </form>
   </section>
+  
+  <div v-if="modalVehiculo" class="modal-vista">
+    <div class="modal-contenido">
+      <h3>Agregar vehículo</h3>
+      <form @submit.prevent="registrarVehiculo">
+        <label>Tipo<input v-model="vehiculoForm.tipo" required /></label>
+        <label>Modelo<input v-model="vehiculoForm.modelo" required /></label>
+        <label>Marca<input v-model="vehiculoForm.marca" required /></label>
+        <label>Color<input v-model="vehiculoForm.color" required /></label>
+        <label>Capacidad<input type="number" v-model.number="vehiculoForm.capacidad" min="1" required /></label>
+        <div style="display:flex;gap:1rem;justify-content:flex-end;">
+          <button type="button" @click="cerrarModalVehiculo">Cancelar</button>
+          <button type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div v-if="modalRuta" class="modal-vista">
+    <div class="modal-contenido">
+      <h3>Agregar Rutas</h3>
+      <form @submit.prevent="registrarRuta">
+        <label>Nombre<input v-model="rutaForm.nombre" required /></label>
+        <label>Salida<input v-model="rutaForm.salida" required /></label>
+        <label>Llegada<input v-model="rutaForm.llegada" required /></label>        
+        <div style="display:flex;gap:1rem;justify-content:flex-end;">
+          <button type="button" @click="cerrarModalRuta">Cancelar</button>
+          <button type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -88,10 +104,6 @@ const nuevo = ref({
   precio: 0,
   disponibleHoy: false,
 });
-
-const publicados = ref([]);
-const vehiculos = ref([]);
-const rutas = ref([]);
 
 const publicar = async () => {
   try {
@@ -127,6 +139,10 @@ const sendDataToServer = async (data) => {
   }
 };
 
+const vehiculos = ref([]);
+const modalVehiculo = ref(false);
+const vehiculoForm = ref({ tipo: '', modelo: '', marca: '', color:'', capacidad: 1 });
+
 const vehiculosRegristrados = async () => {
   try {
     const response = await axios.get('http://localhost:3000/viajes/vehiculos');
@@ -137,22 +153,55 @@ const vehiculosRegristrados = async () => {
   }
 };
 
+const abrirModalVehiculo = () => {
+  vehiculoForm.value = { tipo: '', modelo: '', marca: '', color:'', capacidad: 1 };
+  modalVehiculo.value = true;
+};
+const cerrarModalVehiculo = () => {
+  modalVehiculo.value = false;
+};
+
+const registrarVehiculo = async () => {
+  try {
+    const response = await axios.post('http://localhost:3000/viajes/nuevo-vehiculo', vehiculoForm.value);
+    cerrarModalVehiculo();
+    vehiculosRegristrados();
+  } catch (error) {
+    alert('Error al registrar vehículo');
+  }
+};
+
+const rutas = ref([]);
+const modalRuta = ref(false);
+const rutaForm = ref({ nombre: '', salida: '', llegada: '' });
+
 const rutasRegistradas = async () => {
   try {
     const response = await axios.get('http://localhost:3000/viajes/rutas');
     rutas.value = response.data;
   } catch (error) {
-    console.error('Error obteniendo rutas del servidor:', error);
+    console.error('Error obteniendo datos del servidor:', error);
     rutas.value = [];
   }
 };
 
-const agregarVehiculo = () => {
-  alert('Funcionalidad para agregar vehículo no implementada.');
+const abrirModalRuta = () => {
+  rutaForm.value = { nombre: '', salida: '', llegada: '' };
+  modalRuta.value = true;
+};
+const cerrarModalRuta = () => {
+  modalRuta.value = false;
 };
 
-const agregarRuta = () => {
-  alert('Funcionalidad para agregar ruta no implementada.');
+const registrarRuta = async () => {
+  try {
+    const response = await axios.post('http://localhost:3000/viajes/nueva-ruta', rutaForm.value);
+
+    cerrarModalRuta();
+    rutasRegistradas();
+  } catch (error) {
+    alert('Error al registrar la ruta');
+  }
 };
 
 </script>
@@ -174,4 +223,21 @@ button {
   background: #111; color: #fff;
 }
 button.hoy { background: #2e7d32; }       /* verde cuando está activo */
+
+.modal-vista {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-contenido {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  min-width: 300px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
 </style>
