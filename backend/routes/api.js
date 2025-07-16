@@ -15,18 +15,18 @@ const pool = require('../db/pool');
 
 app.post('/register', async (req, res) => {
   try {
-    const { nombre, email, password, tipo, sexo } = req.body;
+    const { nombre, email, password, tipo, sexo, estado } = req.body;
 
     if (tipo !== 'conductor' && tipo !== 'pasajero') {
       return res.status(400).json({ error: 'Tipo de usuario no válido' });
     }
-
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
-      'INSERT INTO usuarios (nombre, email, password, tipo, sexo) VALUES (?, ?, ?, ?, ?)',
-      [nombre, email, hashedPassword, tipo, sexo]
+      'INSERT INTO usuarios (nombre, email, password, tipo, sexo, estado) VALUES (?, ?, ?, ?, ?, ?)',
+      [nombre, email, hashedPassword, tipo, sexo, estado]
     );
     connection.release();
 

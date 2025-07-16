@@ -2,8 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import DashboardView from '../views/DashboardView.vue';
+import DashboardAdmin from '../views/admin/DashboardAdmin.vue';
 import BuscarViajesView from '../views/pasajero/BuscarViajesView.vue';
-import DashboardHome from '../views/pasajero/DashboardHome.vue';
+import DashboardPasajero from '../views/pasajero/DashboardHome.vue';
 import PublicarViajeView from '../views/conductor/PublicarViajeView.vue';
 import HistorialViajeView from '../views/conductor/HistorialViajeView.vue';
 import { useAuthStore } from '../stores/auth';
@@ -35,7 +36,8 @@ const router = createRouter({
   component: DashboardView,
   meta: { requiresAuth: true },
   children: [
-    { path: '', component: DashboardHome },
+    {path: '', component: DashboardAdmin, meta: { requiresAdmin: true }},
+    { path: '', component: DashboardPasajero, meta: { requiresPasajero: true }},
     { path: 'buscar', component: BuscarViajesView },
     { path:'publicar', component: PublicarViajeView},
     { path:'historial-c', component: HistorialViajeView},

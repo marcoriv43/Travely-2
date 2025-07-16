@@ -47,7 +47,7 @@ import { useRouter } from 'vue-router';
 const nombre = ref('');
 const email = ref('');
 const password = ref('');
-const tipo = ref('pasajero');
+const tipo = ref('');
 const sexo = ref('');
 const error = ref('');
 const success = ref('');
@@ -67,7 +67,8 @@ const handleRegister = async () => {
       email: email.value,
       password: password.value,
       tipo: tipo.value,
-      sexo: sexo.value
+      sexo: sexo.value,
+      estado: 'activo'
     });
     
     success.value = 'Registro exitoso. Redirigiendo...';
