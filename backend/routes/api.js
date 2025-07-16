@@ -15,7 +15,7 @@ const pool = require('../db/pool');
 
 app.post('/register', async (req, res) => {
   try {
-    const { nombre, email, password, tipo, sexo, estado } = req.body;
+    const { nombre, email, password, tipo, sexo, estado } = req.body;    
 
     if (tipo !== 'conductor' && tipo !== 'pasajero') {
       return res.status(400).json({ error: 'Tipo de usuario no válido' });
@@ -53,19 +53,23 @@ app.post('/login', async (req, res) => {
     }
 
     const user = rows[0];
-    const passwordMatch = await bcrypt.compare(password, user.password);
 
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, tipo: user.tipo, sexo: user.sexo },
+      { id: user.id, email: user.email, tipo: user.tipo, sexo: user.sexo, estado: user.estado },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    res.json({ token, user: { id: user.id, nombre: user.nombre, email: user.email, tipo: user.tipo, sexo: user.sexo } });
+    if (user.estado !== 'activo') {
+      return res.status(403).json({ error: 'Usuario suspendido/bloqueado' });
+    }
+    
+    res.json({ token, user: { id: user.id, nombre: user.nombre, email: user.email, tipo: user.tipo, sexo: user.sexo, estado: user.estado } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al iniciar sesión' });

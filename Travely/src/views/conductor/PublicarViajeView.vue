@@ -4,25 +4,30 @@
 
     <form @submit.prevent="publicar" class="form">
 
-      <!-- Nombre del conductor -->
       <label>
         Nombre
         <input v-model="nuevo.nombre" required />
       </label>
 
       <div class="row">
-        <!-- Tipo de vehículo -->
         <label>
           Tipo de vehículo
-          <select v-model="nuevo.vehiculo" required>
-            <option disabled value="">Seleccione</option>
-            <option v-for="t in tiposVehiculo" :key="t" :value="t">
-              {{ t }}
-            </option>
-          </select>
+          <template v-if="vehiculos.length > 0">
+            <select v-model="nuevo.vehiculo" required>
+              <option disabled value="">Seleccione</option>
+              <option v-for="v in vehiculos" :key="v.id || v.placa || v.nombre" :value="v.nombre || v.tipo || v.modelo">
+                {{ v.nombre || v.tipo || v.modelo }} (Capacidad: {{ v.capacidad }})
+              </option>
+            </select>
+          </template>
+          <template v-else>
+            <div style="display:flex;align-items:center;gap:1rem;">
+              <span style="color:#b00;">No hay vehículos registrados</span>
+              <button type="button" @click="agregarVehiculo">Agregar vehículo</button>
+            </div>
+          </template>
         </label>
 
-        <!-- Asientos -->
         <label>
           Asientos disponibles
           <input type="number" v-model.number="nuevo.asientos" min="1" required />
@@ -30,13 +35,22 @@
       </div>
 
 
-      <!-- Ruta -->
       <label>
         Ruta
-        <select v-model="nuevo.ruta" required>
-          <option disabled value="">Seleccione</option>
-          <option v-for="r in rutas" :key="r" :value="r">{{ r }}</option>
-        </select>
+        <template v-if="rutas.length > 0">
+          <select v-model="nuevo.ruta" required>
+            <option disabled value="">Seleccione</option>
+            <option v-for="r in rutas" :key="r.id || r.nombre || r" :value="r.nombre || r">
+              {{ r.nombre || r }}
+            </option>
+          </select>
+        </template>
+        <template v-else>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <span style="color:#b00;">No hay rutas registradas</span>
+            <button type="button" @click="agregarRuta">Agregar ruta</button>
+          </div>
+        </template>
       </label>
 
       <label>
@@ -58,99 +72,88 @@
         </button>
       </div>
     </form>
-
-    <!-- Opcional: lista rápida de lo publicado -->
-    <h3 v-if="publicados.length">Mis viajes publicados</h3>
-    <ul v-if="publicados.length">
-      <li v-for="v in publicados" :key="v.id">
-        {{ v.ruta }} — {{ v.asientos }} asientos — {{ v.vehiculo }}
-        <span v-if="v.disponibleHoy"> (hoy)</span>
-      </li>
-    </ul>
   </section>
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from 'axios';
 
-  const tiposVehiculo = ['Moto', 'Carro', 'Camioneta', 'Bus'];
-  const rutas = [
-    'Valera',
-    'Carvajal',
-    'Centro-Valera',
-    'Country',
-    'La Beatriz',
-    'Trujillo',
-  ];
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-  // modelo del formulario
-  const nuevo = ref({
-    nombre: '',
-    vehiculo: '',
-    asientos: 1,
-    ruta: '',
-    precio: 0,
-    disponibleHoy: false,
-  });
+const nuevo = ref({
+  nombre: '',
+  vehiculo: '',
+  asientos: 1,
+  ruta: '',
+  precio: 0,
+  disponibleHoy: false,
+});
 
-  const publicados = ref([]);
+const publicados = ref([]);
+const vehiculos = ref([]);
+const rutas = ref([]);
 
-  let autoId = 1;
+const publicar = async () => {
+  try {
+    alert('¡Viaje publicado!');
+    await sendDataToServer(nuevo.value);
+    nuevo.value = {
+      nombre: '',
+      vehiculo: '',
+      asientos: 1,
+      ruta: '',
+      precio: 0,
+      disponibleHoy: false,
+    };
+    
+  } catch (error) {
+    console.error('Error al publicar el viaje:', error);
+    alert('Hubo un error al publicar el viaje. Por favor, inténtelo nuevamente.');
+  }
+};
 
-  const publicar = async () => {
-    try {
-      alert('¡Viaje publicado!');
 
-      await sendDataToServer(nuevo.value);
+onMounted(() => {    
+  vehiculosRegristrados();
+  rutasRegistradas();
+});
 
-      nuevo.value = {
-        nombre: '',
-        vehiculo: '',
-        asientos: 1,
-        ruta: '',
-        precio: 0,
-        disponibleHoy: false,
-      };
+const sendDataToServer = async (data) => {
+  try {
+    const response = await axios.post('http://localhost:3000/viajes/register', data);
+    console.log('Response from server:', response.data);
+  } catch (error) {
+    console.error('Error sending data to server:', error);
+  }
+};
 
-      getDataToServer();
-    } catch (error) {
-      console.error('Error al publicar el viaje:', error);
-      alert('Hubo un error al publicar el viaje. Por favor, inténtelo nuevamente.');
-    }
-  };
+const vehiculosRegristrados = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/viajes/vehiculos');
+    vehiculos.value = response.data;
+  } catch (error) {
+    console.error('Error obteniendo datos del servidor:', error);
+    vehiculos.value = [];
+  }
+};
 
-  onMounted(() => {    
-    getDataToServer();
-  });
+const rutasRegistradas = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/viajes/rutas');
+    rutas.value = response.data;
+  } catch (error) {
+    console.error('Error obteniendo rutas del servidor:', error);
+    rutas.value = [];
+  }
+};
 
-  const sendDataToServer = async (data) => {
-    try {
-      const response = await axios.post('http://localhost:3000/viajes/register', data);
-      console.log('Response from server:', response.data);
-    } catch (error) {
-      console.error('Error sending data to server:', error);
-    }
-  };
-  const getDataToServer = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/viajes');
-      let array = response.data;
-      console.log(array);
+const agregarVehiculo = () => {
+  alert('Funcionalidad para agregar vehículo no implementada.');
+};
 
-      // Actualizar publicados con los datos recibidos
-      publicados.value = array.map(v => ({
-        id: v.id,
-        nombre: v.conductor,
-        vehiculo: v.tipo_vehiculo,
-        asientos: v.cantidad_asientos,
-        ruta: v.ruta,
-        disponibleHoy: v.disponible_hoy
-      }));
-    } catch (error) {
-      console.error('Error obteniendo datos del servidor:', error);
-    }
-  };
+const agregarRuta = () => {
+  alert('Funcionalidad para agregar ruta no implementada.');
+};
 
 </script>
 

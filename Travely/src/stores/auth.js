@@ -11,14 +11,15 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value);
   const userType = computed(() => user.value?.tipo);
   
-  async function register({ nombre, email, password, tipo, sexo }) {
+  async function register({ nombre, email, password, tipo, sexo, estado }) {
     try {
       const response = await axios.post('http://localhost:3000/api/register', {
         nombre,
         email,
         password,
         tipo,
-        sexo
+        sexo,
+        estado
       });
       return response.data;
     } catch (error) {
@@ -38,7 +39,6 @@ export const useAuthStore = defineStore('auth', () => {
       
       localStorage.setItem('token', token.value);
       localStorage.setItem('user', JSON.stringify(user.value));
-      
       
       return response.data;
     } catch (error) {

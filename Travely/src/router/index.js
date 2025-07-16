@@ -3,10 +3,11 @@ import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import DashboardAdmin from '../views/admin/DashboardAdmin.vue';
-import BuscarViajesView from '../views/pasajero/BuscarViajesView.vue';
-import DashboardPasajero from '../views/pasajero/DashboardHome.vue';
+import DashboardConductor from '../views/conductor/DashboardConductor.vue';
 import PublicarViajeView from '../views/conductor/PublicarViajeView.vue';
 import HistorialViajeView from '../views/conductor/HistorialViajeView.vue';
+import DashboardPasajero from '../views/pasajero/DashboardPasajero.vue';
+import BuscarViajesView from '../views/pasajero/BuscarViajesView.vue';
 import { useAuthStore } from '../stores/auth';
 
 
@@ -29,31 +30,42 @@ const router = createRouter({
       component: RegisterView,
       meta: { requiresGuest: true }
     },
-   
-
-{
-  path: '/dashboard',
-  component: DashboardView,
-  meta: { requiresAuth: true },
-  children: [
-    {path: '', component: DashboardAdmin, meta: { requiresAdmin: true }},
-    { path: '', component: DashboardPasajero, meta: { requiresPasajero: true }},
-    { path: 'buscar', component: BuscarViajesView },
-    { path:'publicar', component: PublicarViajeView},
-    { path:'historial-c', component: HistorialViajeView},
-  ],
-}
+    {
+      path: '/dashboard',
+      component: DashboardView,
+      meta: { requiresAuth: true },
+      children: [
+        { path: 'admin', component: DashboardAdmin},
+        { path: 'conductor', component: DashboardConductor},
+        { path: 'pasajero', component: DashboardPasajero},
+        { path: 'buscar', component: BuscarViajesView },
+        { path:'publicar', component: PublicarViajeView},
+        { path:'historial-c', component: HistorialViajeView},
+      ],
+    }
 
   ]
 });
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login');
   } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/dashboard');
+  } else if (to.path === '/dashboard') {
+    // Redirigir según el tipo de usuario
+    const tipo = authStore.user?.tipo;
+    if (tipo === 'admin') {
+      next('/dashboard/admin');
+    } else if (tipo === 'conductor') {
+      next('/dashboard/conductor');
+    } else if (tipo === 'pasajero') {
+      next('/dashboard/pasajero');
+    } else {
+      next();
+    }
   } else {
     next();
   }

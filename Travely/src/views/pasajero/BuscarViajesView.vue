@@ -74,7 +74,14 @@
         </tr>
       </tbody>
     </table>
-
+     <!-- Opcional: lista rápida de lo publicado -->
+    <h3 v-if="publicados.length">Mis viajes publicados</h3>
+    <ul v-if="publicados.length">
+      <li v-for="v in publicados" :key="v.id">
+        {{ v.ruta }} — {{ v.asientos }} asientos — {{ v.vehiculo }}
+        <span v-if="v.disponibleHoy"> (hoy)</span>
+      </li>
+    </ul>
     <p v-else-if="buscado && !viajes.length">No se encontraron viajes.</p>
   </section>
 </template>
@@ -82,15 +89,6 @@
 <script setup>
 import { ref } from 'vue';
 
-const lugares = [
-  'Valera',
-  'Carvajal',
-  'Centro-Valera',
-  'Trujillo',
-  'Contry',
-  'La Beatriz',
-  'Carmania'
-];
 
 
 const form = ref({
@@ -119,6 +117,27 @@ const eliminar = (id) => {
 
 const formatear = (iso) =>
   iso ? iso.split('-').reverse().join('/') : '—';
+
+const getDataToServer = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/viajes');
+    let array = response.data;
+    console.log(array);
+
+    // Actualizar publicados con los datos recibidos
+    publicados.value = array.map(v => ({
+      id: v.id,
+      nombre: v.conductor,
+      vehiculo: v.tipo_vehiculo,
+      asientos: v.cantidad_asientos,
+      ruta: v.ruta,
+      disponibleHoy: v.disponible_hoy
+    }));
+  } catch (error) {
+    console.error('Error obteniendo datos del servidor:', error);
+  }
+};
+
 </script>
 
 <style scoped>

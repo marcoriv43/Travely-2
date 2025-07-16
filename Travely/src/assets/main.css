@@ -27,15 +27,16 @@ a,
   }
 
   #app {
-    display: grid;
-    padding: 30px;
+    display: grid;    
   }
 }
 
 .dashboard-container {
-  max-width: 1200px;
+  width: 1200px;
+  min-height: 400px;
   margin: auto;
   padding: 20px;
+  background-color: #f9f9f9;
 }
 
 header {

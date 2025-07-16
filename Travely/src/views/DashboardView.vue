@@ -1,6 +1,7 @@
 <template>
   <div class="dashboard-container">
     <header>
+      <img src="/travely.png" alt="" style="cursor:pointer;" @click="goHome" class="logo"/>
       <h1>Bienvenido, {{ authStore.user.nombre }}</h1>
       <button @click="authStore.logout" class="logout-btn">Cerrar Sesión</button>
     </header>
@@ -24,6 +25,8 @@ import { useAuthStore } from '@/stores/auth';
 const authStore = useAuthStore();
 const router    = useRouter();
 
+
+const goHome = () => router.push('/');
 const buscarViajes = () => router.push('/dashboard/buscar');
 const verHistorialPasajero = () => router.push('/dashboard/historial');
 const publicarViaje = () => router.push('/dashboard/publicar');
@@ -33,10 +36,6 @@ const verHistorialConductor = () => router.push('/dashboard/historial-c');
 </script>
 
 <style scoped>
-.dashboard-container {
-  padding: 20px;
-  background-color: #f9f9f9;
-}
 
 .card {
   border: 1px solid #ddd;
@@ -66,6 +65,11 @@ const verHistorialConductor = () => router.push('/dashboard/historial-c');
 
 .conductor-dashboard .card {
   background-color: #fff0f5;
+}
+
+.logo {
+  padding: 5px 5px 0px 5px;
+  width: 70px;
 }
 
 </style>

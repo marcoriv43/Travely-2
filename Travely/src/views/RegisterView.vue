@@ -24,7 +24,7 @@
         <div class="form-group">
         <label for="sexo">Sexo:</label>
         <select id="sexo" v-model="sexo" required>
-          <option value="masculino">Maculino</option>
+          <option value="masculino">Masculino</option>
           <option value="femenino">Femenino</option>
           <option value="Otro">Otro</option>
         </select>

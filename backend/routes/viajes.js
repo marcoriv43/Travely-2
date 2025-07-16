@@ -40,4 +40,34 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.get('/vehiculos', async (req, res) => {  
+  try {
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      'SELECT * FROM vehiculo ORDER BY capacidad',
+    );
+    connection.release();
+    
+    res.send(result);
+  } catch (error) {
+    console.error('Error al obtener los vehiculos registrados:', error);
+    res.status(500).json({ error: 'Error al obtener los vehiculos registrados' });
+  }
+});
+
+app.get('/rutas', async (req, res) => {  
+  try {
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      'SELECT * FROM ruta ORDER BY nombre',
+    );
+    connection.release();
+    
+    res.send(result);
+  } catch (error) {
+    console.error('Error al obtener las rutas registradas:', error);
+    res.status(500).json({ error: 'Error al obtener las rutas registradas' });
+  }
+});
+
 module.exports = app;
