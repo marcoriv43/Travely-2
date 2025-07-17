@@ -3,13 +3,14 @@
     <h2>Publicar viaje</h2>
 
     <form @submit.prevent="publicar" class="form">
-
-      <label>Nombre<input v-model="nuevo.nombre" required /></label>
+      <label>
+        Descripcion<input v-model="nuevo.descripcion" required />
+      </label>
 
       <label>
-        Tipo de vehículo
+        Selecciona un vehículo
           <template v-if="vehiculos.length > 0">
-            <select v-model="nuevo.vehiculo" required>
+            <select v-model="nuevo.id_vehiculo" required>
               <option disabled value="">Seleccione</option>
               <option v-for="v in vehiculos" :key="v.id || v.tipo || v.modelo || v.marca || v.color || v.capacidad":value="v.id || v.tipo || v.modelo || v.marca || v.color || v.capacidad">
                 {{v.tipo}} {{v.modelo}} {{v.marca}} {{v.color}} (Capacidad: {{ v.capacidad }})
@@ -22,11 +23,10 @@
           <button type="button" @click="abrirModalVehiculo">Agregar vehículo</button>
       </label>
 
-
       <label>
         Ruta
         <template v-if="rutas.length > 0">
-          <select v-model="nuevo.ruta" required>
+          <select v-model="nuevo.id_ruta" required>
             <option disabled value="">Seleccione</option>
             <option v-for="r in rutas" :key="r.id || r.nombre || r.salida || r.llegada" :value="r.id || r.nombre || r.salida || r.llegada">
               {{ r.nombre }} ({{ r.salida }} - {{ r.llegada }})
@@ -40,23 +40,35 @@
       </label>
 
       <label>
+        Fecha de inicio        
+        <button type="button" :class="{ hoy: nuevo.disponibleHoy }" @click="disponibleHoyBtn">
+          {{ nuevo.disponibleHoy ? 'Disponible HOY ✅' : 'Disponible hoy' }}
+        </button>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <input type="date" v-model="nuevo.inicia_el" :disabled="nuevo.disponibleHoy" :min="fechaHoy()" required>
+          <input type="time" v-model="nuevo.inicia_a" required>
+        </div>
+      </label>
+
+      <label>
         Precio ($)
         <input type="number" v-model.number="nuevo.precio" min="1" required />
       </label>
-
-      <div class="row">
-        <button type="button"
-                :class="{ hoy: nuevo.disponibleHoy }"
-                @click="nuevo.disponibleHoy = !nuevo.disponibleHoy">
-          {{ nuevo.disponibleHoy ? 'Disponible HOY ✅' : 'Disponible hoy' }}
-        </button>
-
+      <input type="hidden" v-model="nuevo.id_conductor"/>
+      <div class="row">        
         <button type="submit">
           Publicar
         </button>
       </div>
     </form>
   </section>
+
+  <div v-if="cargando" class="modal-vista">
+    <div class="modal-contenido">
+      <h3>Registrando viaje...</h3>
+      <p>Por favor espere.</p>
+    </div>
+  </div>
   
   <div v-if="modalVehiculo" class="modal-vista">
     <div class="modal-contenido">
@@ -91,53 +103,72 @@
   </div>
 </template>
 
+
 <script setup>
 
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-const nuevo = ref({
-  nombre: '',
-  vehiculo: '',
-  asientos: 1,
-  ruta: '',
-  precio: 0,
-  disponibleHoy: false,
-});
+const authStore = useAuthStore();
 
-const publicar = async () => {
-  try {
-    alert('¡Viaje publicado!');
-    await sendDataToServer(nuevo.value);
-    nuevo.value = {
-      nombre: '',
-      vehiculo: '',
-      asientos: 1,
-      ruta: '',
-      precio: 0,
-      disponibleHoy: false,
-    };
-    
-  } catch (error) {
-    console.error('Error al publicar el viaje:', error);
-    alert('Hubo un error al publicar el viaje. Por favor, inténtelo nuevamente.');
-  }
-};
-
+const router = useRouter();
+const cargando = ref(false);
 
 onMounted(() => {    
   vehiculosRegristrados();
   rutasRegistradas();
 });
 
-const sendDataToServer = async (data) => {
+const nuevo = ref({
+  descripcion: '',
+  id_vehiculo: '',
+  id_ruta: '',
+  disponibleHoy: false,
+  inicia_el: '',
+  inicia_a: '',
+  precio: 0,
+  id_conductor: authStore.user.id
+});
+
+const publicar = async () => {
+  cargando.value = true;
   try {
-    const response = await axios.post('http://localhost:3000/viajes/register', data);
-    console.log('Response from server:', response.data);
+    const response = await axios.post('http://localhost:3000/viajes/register', nuevo.value);
+    nuevo.value = {
+      descripcion: '',
+      id_vehiculo: '',
+      id_ruta: '',      
+      disponibleHoy: false,
+      inicia_el: '',
+      inicia_a: '',
+      precio: 0,
+    };
+    setTimeout(() => {
+      cargando.value = false;
+      router.push('/dashboard');
+    }, 800);
   } catch (error) {
+    cargando.value = false;
     console.error('Error sending data to server:', error);
+    alert('Hubo un error al publicar el viaje. Por favor, inténtelo nuevamente.');
   }
 };
+
+function fechaHoy() {
+  const d = new Date();
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  return `${d.getFullYear()}-${month}-${day}`;
+}
+
+function disponibleHoyBtn() {
+  nuevo.value.disponibleHoy = !nuevo.value.disponibleHoy;
+  if (nuevo.value.disponibleHoy) {
+    nuevo.value.inicia_el = fechaHoy();
+  }
+}
 
 const vehiculos = ref([]);
 const modalVehiculo = ref(false);
@@ -166,8 +197,9 @@ const registrarVehiculo = async () => {
     const response = await axios.post('http://localhost:3000/viajes/nuevo-vehiculo', vehiculoForm.value);
     cerrarModalVehiculo();
     vehiculosRegristrados();
+
   } catch (error) {
-    alert('Error al registrar vehículo');
+    alert('Error al registrar vehículo: ' + error.message);
   }
 };
 

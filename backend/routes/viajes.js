@@ -6,32 +6,23 @@ const app = express();
 const pool = require('../db/pool');
 app.use(bodyParser.json());
 
-app.get('', async (req, res) => {  
-  try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.execute(
-      'SELECT * FROM viajes',
-    );
-    connection.release();
-    
-    res.send(result);
-  } catch (error) {
-    console.error('Error al obtener viaje:', error);
-    res.status(500).json({ error: 'Error al obtener viaje' });
-  }
-});
-
 app.post('/register', async (req, res) => {  
   try {
-    const { nombre, vehiculo, asientos, ruta, precio, disponibleHoy } = req.body;
+    const { descripcion, id_vehiculo, id_ruta, disponibleHoy, inicia_el, inicia_a, precio, id_conductor } = req.body;
     
     const connection = await pool.getConnection();
+    const [newPasajeros] = await connection.execute(
+      'INSERT INTO pasajeros(id_pasajero1, id_pasajero2, id_pasajero3, id_pasajero4, id_pasajero5, id_pasajero6, id_pasajero7, id_pasajero8) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [0, 0, 0, 0, 0, 0, 0, 0]
+    );
+    const idPasajeros = newPasajeros.insertId;
+    
     const [result] = await connection.execute(
-      'INSERT INTO viajes (nombre, vehiculo, asientos, ruta, precio, disponibleHoy) VALUES (?, ?, ?, ?, ?, ?)',
-      [nombre, vehiculo, asientos, ruta, precio, disponibleHoy]
+      'INSERT INTO viajes (descripcion, id_vehiculo, id_ruta, disp_hoy, inicia_el, inicia_a, precio, id_conductor, id_pasajeros) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [descripcion, id_vehiculo, id_ruta, disponibleHoy, inicia_el, inicia_a, precio, id_conductor, idPasajeros]
     );
     connection.release();
-    
+
     res.status(200).json({ message: 'Viaje registrado exitosamente' });
   } catch (error) {
     console.error('Error al registrar viaje:', error);
