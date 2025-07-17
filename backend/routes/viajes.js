@@ -6,20 +6,36 @@ const app = express();
 const pool = require('../db/pool');
 app.use(bodyParser.json());
 
+app.get('/', async (req, res) => {  
+  try {
+    let id_conductor = req.query.id_conductor;
+    
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      'SELECT * FROM viajes LEFT JOIN vehiculo ON vehiculo_id=id_vehiculo LEFT JOIN ruta ON ruta_id=id_ruta WHERE conductor_id = ? ORDER BY inicia_el DESC', [id_conductor]
+    );
+    connection.release();
+    res.send(result);
+  } catch (error) {
+    console.error('Error al obtener los viajes registrados:', error);
+    res.status(500).json({ error: 'Error al obtener los viajes registrados' });
+  }
+});
+
 app.post('/register', async (req, res) => {  
   try {
-    const { descripcion, id_vehiculo, id_ruta, disponibleHoy, inicia_el, inicia_a, precio, id_conductor } = req.body;
+    const { descripcion, vehiculo_id, ruta_id, disponibleHoy, inicia_el, inicia_a, precio, conductor_id } = req.body;
     
     const connection = await pool.getConnection();
     const [newPasajeros] = await connection.execute(
       'INSERT INTO pasajeros(id_pasajero1, id_pasajero2, id_pasajero3, id_pasajero4, id_pasajero5, id_pasajero6, id_pasajero7, id_pasajero8) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [0, 0, 0, 0, 0, 0, 0, 0]
     );
-    const idPasajeros = newPasajeros.insertId;
+    const idPasajeros = newPasajeros.insertId;    
     
     const [result] = await connection.execute(
-      'INSERT INTO viajes (descripcion, id_vehiculo, id_ruta, disp_hoy, inicia_el, inicia_a, precio, id_conductor, id_pasajeros) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [descripcion, id_vehiculo, id_ruta, disponibleHoy, inicia_el, inicia_a, precio, id_conductor, idPasajeros]
+      'INSERT INTO viajes (descripcion, vehiculo_id, ruta_id, disp_hoy, inicia_el, inicia_a, precio, conductor_id, pasajeros_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [descripcion, vehiculo_id, ruta_id, disponibleHoy, inicia_el, inicia_a, precio, conductor_id, idPasajeros]
     );
     connection.release();
 

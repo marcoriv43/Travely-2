@@ -10,9 +10,9 @@
       <label>
         Selecciona un vehículo
           <template v-if="vehiculos.length > 0">
-            <select v-model="nuevo.id_vehiculo" required>
+            <select v-model="nuevo.vehiculo_id" required>
               <option disabled value="">Seleccione</option>
-              <option v-for="v in vehiculos" :key="v.id || v.tipo || v.modelo || v.marca || v.color || v.capacidad":value="v.id || v.tipo || v.modelo || v.marca || v.color || v.capacidad">
+              <option v-for="v in vehiculos" :key="v.id_vehiculo || v.tipo || v.modelo || v.marca || v.color || v.capacidad":value="v.id_vehiculo || v.tipo || v.modelo || v.marca || v.color || v.capacidad">
                 {{v.tipo}} {{v.modelo}} {{v.marca}} {{v.color}} (Capacidad: {{ v.capacidad }})
               </option>
             </select>
@@ -26,9 +26,9 @@
       <label>
         Ruta
         <template v-if="rutas.length > 0">
-          <select v-model="nuevo.id_ruta" required>
+          <select v-model="nuevo.ruta_id" required>
             <option disabled value="">Seleccione</option>
-            <option v-for="r in rutas" :key="r.id || r.nombre || r.salida || r.llegada" :value="r.id || r.nombre || r.salida || r.llegada">
+            <option v-for="r in rutas" :key="r.id_ruta || r.nombre || r.salida || r.llegada" :value="r.id_ruta || r.nombre || r.salida || r.llegada">
               {{ r.nombre }} ({{ r.salida }} - {{ r.llegada }})
             </option>
           </select>
@@ -54,7 +54,7 @@
         Precio ($)
         <input type="number" v-model.number="nuevo.precio" min="1" required />
       </label>
-      <input type="hidden" v-model="nuevo.id_conductor"/>
+      <input type="hidden" v-model="nuevo.conductor_id"/>
       <div class="row">        
         <button type="submit">
           Publicar
@@ -123,13 +123,13 @@ onMounted(() => {
 
 const nuevo = ref({
   descripcion: '',
-  id_vehiculo: '',
-  id_ruta: '',
+  vehiculo_id: '',
+  ruta_id: '',
   disponibleHoy: false,
   inicia_el: '',
   inicia_a: '',
   precio: 0,
-  id_conductor: authStore.user.id
+  conductor_id: authStore.user.id
 });
 
 const publicar = async () => {
@@ -138,8 +138,8 @@ const publicar = async () => {
     const response = await axios.post('http://localhost:3000/viajes/register', nuevo.value);
     nuevo.value = {
       descripcion: '',
-      id_vehiculo: '',
-      id_ruta: '',      
+      vehiculo_id: '',
+      ruta_id: '',      
       disponibleHoy: false,
       inicia_el: '',
       inicia_a: '',
