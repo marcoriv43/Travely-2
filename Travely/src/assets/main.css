@@ -66,3 +66,30 @@ background: #E1BEE7;
   padding: 1rem 0;
   border-top: 1px solid #e0e0e0;
 }
+
+.contenedor {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  gap: 80px;
+}
+
+.mitad-contenedor {
+  padding: 10px;
+  flex: 50%;
+  min-width: 0;
+}
+
+.tercio-contenedor {  
+  padding: 10px;
+  flex: 33%;
+  min-width: 0;
+}
+
+.cuarto-contenedor {
+  padding: 10px;
+  flex: 25%;
+  min-width: 0;
+}

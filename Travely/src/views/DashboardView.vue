@@ -28,10 +28,8 @@ const router    = useRouter();
 
 const goHome = () => router.push('/');
 const buscarViajes = () => router.push('/dashboard/buscar');
-const verHistorialPasajero = () => router.push('/dashboard/historial');
-const publicarViaje = () => router.push('/dashboard/publicar');
 const verActivos = () => router.push('/dashboard/activos');
-const verHistorialConductor = () => router.push('/dashboard/historial-c');
+const verHistorialConductor = () => router.push('/dashboard/historial');
 
 </script>
 

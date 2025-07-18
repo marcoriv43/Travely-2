@@ -6,7 +6,45 @@ const app = express();
 const pool = require('../db/pool');
 app.use(bodyParser.json());
 
-app.get('/', async (req, res) => {  
+app.get('', async (req, res) => {  
+  try {
+    let id_conductor = req.query.id_conductor;
+    
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      `SELECT * FROM viajes 
+        LEFT JOIN vehiculo ON vehiculo_id=id_vehiculo 
+        LEFT JOIN ruta ON ruta_id=id_ruta 
+        LEFT JOIN pasajeros ON pasajeros_id=id_pasajero
+        WHERE conductor_id = ? 
+        AND inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+        ORDER BY inicia_el DESC`,
+      [id_conductor]
+    );
+    connection.release();
+    res.send(result);
+  } catch (error) {
+    console.error('Error al obtener los viajes registrados:', error);
+    res.status(500).json({ error: 'Error al obtener los viajes registrados' });
+  }
+});
+
+app.delete('/:id_viaje', async (req, res) => {
+  try {
+    const { id_viaje } = req.params; // <-- aquí
+
+    const connection = await pool.getConnection();
+    await connection.execute('DELETE FROM viajes WHERE id_viaje = ?', [id_viaje]);
+    connection.release();
+
+    res.status(200).json({ message: 'Viaje cancelado exitosamente' });
+  } catch (error) {
+    console.error('Error al cancelar el viaje:', error);
+    res.status(500).json({ error: 'Error al cancelar el viaje' });
+  }
+});
+
+app.get('/historial', async (req, res) => {  
   try {
     let id_conductor = req.query.id_conductor;
     

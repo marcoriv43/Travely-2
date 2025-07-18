@@ -1,21 +1,139 @@
 <template>
     <h2>Dashboard de Conductor</h2>
-    <div class="card">
-        <h3>Ofertas de Viaje</h3>
-        <p>Publica un nuevo viaje disponible.</p>
-        <button @click="router.push('/dashboard/publicar')">Publicar Viaje</button>
-    </div>
-    <div class="card">
-        <h3>Historial de Viajes</h3>
-        <p>Revisa tus viajes anteriores.</p>
-        <button @click="router.push('/dashboard/historial-c')">Ver Viajes</button>
-    </div>
+    <div class="contenedor">        
+        <div class="mitad-contenerdor">
+            <div class="card">
+                <h3>Ofertas de Viaje</h3>
+                <p>Publica un nuevo viaje disponible.</p>
+                <button @click="publicarViaje">Publicar Viaje</button>
+            </div>
+            <div class="card">
+                <h3>Historial de Viajes</h3>
+                <p>Revisa tus viajes anteriores.</p>
+                <button @click="verHistorial">Ver Viajes</button>
+            </div>
+        </div>
+        <div class="mitad-contenerdor">
+            <div class="card">
+                <h3>Viajes Activos</h3>
+                <p>Revisa tus viajes activos.</p>
+                <div v-if="viajes.length === 0" class="no-viajes">
+                    <p>No tienes viajes publicados.</p>
+                    <p>Publica un nuevo viaje disponible.</p>
+                    <button @click="publicarViaje">Publicar Viaje</button>
+                </div>
+                <table v-else class="tabla-historial">
+                    <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Vehiculo</th>
+                        <th>Disponibilidad</th>
+                        <th>Ruta</th>
+                        <th>Fecha y Hora</th>
+                        <th>Precio</th>
+                        <th>Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(viaje, idx) in viajes" :key="idx">
+                        <td>{{ viaje.descripcion }}</td>
+                        <td>{{ viaje.vehiculo.tipo }} {{ viaje.vehiculo.color }}<br>({{ viaje.vehiculo.modelo }} - {{ viaje.vehiculo.marca }})</td>
+                        <td>{{ viaje.disponibilidad }}</td>
+                        <td>{{ viaje.ruta.nombre }}<br>({{ viaje.ruta.salida }} - {{ viaje.ruta.llegada }})</td>
+                        <td>{{ viaje.fecha }}</td>
+                        <td>${{ viaje.precio }}</td>
+                        <td>
+                            <button @click="cancelarViaje(viaje.id_viaje)">Cancelar</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
 
+            </div>
+
+        </div>
+    </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
 const router = useRouter();
 const authStore = useAuthStore();
+
+const verHistorial = () => router.push('/dashboard/historial-c');
+const publicarViaje = () => router.push('/dashboard/publicar');
+
+onMounted(() => {
+  misViajes();
+});
+
+const viajes = ref([]);
+
+const misViajes = async () => {
+  try {
+    let id_conductor = authStore.user.id;
+    const response = await axios.get('http://localhost:3000/viajes', {
+      params: { id_conductor }
+    });
+    let historial = response.data;
+    
+    let viajesTransformados = [];
+    historial.forEach(element => {
+      let fecha = '';
+      if (element.inicia_el && element.inicia_a) {
+        const fechaObj = new Date(element.inicia_el);
+        const [hora, minuto] = element.inicia_a.split(":");
+        fechaObj.setHours(hora, minuto);
+        const dia = String(fechaObj.getDate()).padStart(2, '0');
+        const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
+        const año = fechaObj.getFullYear();
+        const horaStr = String(hora).padStart(2, '0');
+        const minStr = String(minuto).padStart(2, '0');
+        fecha = `${dia}/${mes}/${año} ${horaStr}:${minStr}`;
+      }
+      let disponibilidad = element.capacidad;
+      for (let i = 1; i < 9; i++) {
+        if (element[`id_pasajero${i}`]>0) {
+          disponibilidad--;          
+        }    
+      }            
+      viajesTransformados.push({
+        id_viaje: element.id_viaje,
+        descripcion: element.descripcion,
+        vehiculo: {
+          tipo: element.tipo,
+          modelo: element.modelo,
+          marca: element.marca,
+          color: element.color          
+        },
+        ruta: {
+          nombre: element.nombre,
+          salida: element.salida,
+          llegada: element.llegada
+        },
+        disponibilidad,
+        fecha,
+        precio: element.precio
+      });
+    });
+    viajes.value = viajesTransformados;
+  } catch (error) {
+    console.error('Error obteniendo datos del servidor:', error);
+  }
+};
+
+const cancelarViaje = async (id_viaje) => {
+  try {
+    await axios.delete(`http://localhost:3000/viajes/${id_viaje}`);
+    misViajes();
+  } catch (error) {
+    console.error('Error cancelando el viaje:', error);
+    alert('Hubo un error al cancelar el viaje. Por favor, inténtelo nuevamente.');
+  }
+};
+
 </script>
