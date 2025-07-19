@@ -108,12 +108,12 @@ app.get('/vehiculos', async (req, res) => {
 
 app.post('/nuevo-vehiculo', async (req, res) => {  
   try {
-    const { tipo, modelo, marca, color, capacidad } = req.body;
+    const { tipo_vehiculo, modelo, marca, color, capacidad } = req.body;
     
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
-      'INSERT INTO vehiculo(tipo, modelo, marca, color, capacidad) VALUES (?, ?, ?, ?, ?)',
-      [tipo, modelo, marca, color, capacidad]
+      'INSERT INTO vehiculo(tipo_vehiculo, modelo, marca, color, capacidad) VALUES (?, ?, ?, ?, ?)',
+      [tipo_vehiculo, modelo, marca, color, capacidad]
     );
     connection.release();
     
@@ -128,7 +128,7 @@ app.get('/rutas', async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
-      'SELECT * FROM ruta ORDER BY nombre',
+      'SELECT * FROM ruta ORDER BY nombre_ruta',
     );
     connection.release();
     
@@ -141,12 +141,12 @@ app.get('/rutas', async (req, res) => {
 
 app.post('/nueva-ruta', async (req, res) => {  
   try {
-    const { nombre, salida, llegada } = req.body;
+    const { nombre_ruta, salida, llegada } = req.body;
     
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
-      'INSERT INTO ruta (nombre, salida, llegada) VALUES (?, ?, ?)',
-      [nombre, salida, llegada]
+      'INSERT INTO ruta (nombre_ruta, salida, llegada) VALUES (?, ?, ?)',
+      [nombre_ruta, salida, llegada]
     );
     connection.release();
     

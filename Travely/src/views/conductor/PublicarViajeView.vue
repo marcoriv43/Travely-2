@@ -12,8 +12,8 @@
           <template v-if="vehiculos.length > 0">
             <select v-model="nuevo.vehiculo_id" required>
               <option disabled value="">Seleccione</option>
-              <option v-for="v in vehiculos" :key="v.id_vehiculo || v.tipo || v.modelo || v.marca || v.color || v.capacidad":value="v.id_vehiculo || v.tipo || v.modelo || v.marca || v.color || v.capacidad">
-                {{v.tipo}} {{v.modelo}} {{v.marca}} {{v.color}} (Capacidad: {{ v.capacidad }})
+              <option v-for="v in vehiculos" :key="v.id_vehiculo || v.tipo_vehiculo || v.modelo || v.marca || v.color || v.capacidad":value="v.id_vehiculo || v.tipo_vehiculo || v.modelo || v.marca || v.color || v.capacidad">
+                {{v.tipo_vehiculo}} {{v.modelo}} {{v.marca}} {{v.color}} (Capacidad: {{ v.capacidad }})
               </option>
             </select>
           </template>
@@ -28,8 +28,8 @@
         <template v-if="rutas.length > 0">
           <select v-model="nuevo.ruta_id" required>
             <option disabled value="">Seleccione</option>
-            <option v-for="r in rutas" :key="r.id_ruta || r.nombre || r.salida || r.llegada" :value="r.id_ruta || r.nombre || r.salida || r.llegada">
-              {{ r.nombre }} ({{ r.salida }} - {{ r.llegada }})
+            <option v-for="r in rutas" :key="r.id_ruta || r.nombre_ruta || r.salida || r.llegada" :value="r.id_ruta || r.nombre_ruta || r.salida || r.llegada">
+              {{ r.nombre_ruta }} ({{ r.salida }} - {{ r.llegada }})
             </option>
           </select>
         </template>
@@ -74,7 +74,7 @@
     <div class="modal-contenido">
       <h3>Agregar vehículo</h3>
       <form @submit.prevent="registrarVehiculo">
-        <label>Tipo<input v-model="vehiculoForm.tipo" required /></label>
+        <label>Tipo<input v-model="vehiculoForm.tipo_vehiculo" required /></label>
         <label>Modelo<input v-model="vehiculoForm.modelo" required /></label>
         <label>Marca<input v-model="vehiculoForm.marca" required /></label>
         <label>Color<input v-model="vehiculoForm.color" required /></label>
@@ -91,7 +91,7 @@
     <div class="modal-contenido">
       <h3>Agregar Rutas</h3>
       <form @submit.prevent="registrarRuta">
-        <label>Nombre<input v-model="rutaForm.nombre" required /></label>
+        <label>Nombre<input v-model="rutaForm.nombre_ruta" required /></label>
         <label>Salida<input v-model="rutaForm.salida" required /></label>
         <label>Llegada<input v-model="rutaForm.llegada" required /></label>        
         <div style="display:flex;gap:1rem;justify-content:flex-end;">
@@ -112,7 +112,6 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 const authStore = useAuthStore();
-
 const router = useRouter();
 const cargando = ref(false);
 
@@ -172,7 +171,7 @@ function disponibleHoyBtn() {
 
 const vehiculos = ref([]);
 const modalVehiculo = ref(false);
-const vehiculoForm = ref({ tipo: '', modelo: '', marca: '', color:'', capacidad: 1 });
+const vehiculoForm = ref({ tipo_vehiculo: '', modelo: '', marca: '', color:'', capacidad: 1 });
 
 const vehiculosRegristrados = async () => {
   try {
@@ -185,7 +184,7 @@ const vehiculosRegristrados = async () => {
 };
 
 const abrirModalVehiculo = () => {
-  vehiculoForm.value = { tipo: '', modelo: '', marca: '', color:'', capacidad: 1 };
+  vehiculoForm.value = { tipo_vehiculo: '', modelo: '', marca: '', color:'', capacidad: 1 };
   modalVehiculo.value = true;
 };
 const cerrarModalVehiculo = () => {
@@ -205,7 +204,7 @@ const registrarVehiculo = async () => {
 
 const rutas = ref([]);
 const modalRuta = ref(false);
-const rutaForm = ref({ nombre: '', salida: '', llegada: '' });
+const rutaForm = ref({ nombre_ruta: '', salida: '', llegada: '' });
 
 const rutasRegistradas = async () => {
   try {
@@ -218,7 +217,7 @@ const rutasRegistradas = async () => {
 };
 
 const abrirModalRuta = () => {
-  rutaForm.value = { nombre: '', salida: '', llegada: '' };
+  rutaForm.value = { nombre_ruta: '', salida: '', llegada: '' };
   modalRuta.value = true;
 };
 const cerrarModalRuta = () => {

@@ -3,19 +3,19 @@
     <h2>Historico de mis viajes</h2>
     <div class="historial">
       <div v-if="viajes.length === 0" class="no-viajes">
-        <p>No tienes viajes publicados.</p>
-        <p>Publica un nuevo viaje disponible.</p>
-        <button @click="publicarViaje">Publicar Viaje</button>
+        <p>No tienes viajes registrados.</p>
+        <p>Encuentra conductores disponibles cerca de ti.</p>
+        <button @click="buscarViaje">Buscar Viajes</button>
       </div>
       <table v-else class="tabla-historial">
         <thead>
           <tr>
             <th><button @click="ordenarPor('descripcion')">Descripción</button></th>
-            <th><button @click="ordenarPor('tipo_vehiculo')">Tipo</button></th>
+            <th><button @click="ordenarPor('nombre_conductor')">Conductor</button></th>
+            <th><button @click="ordenarPor('tipo')">Tipo</button></th>
             <th><button @click="ordenarPor('modelo')">Modelo</button></th>
             <th><button @click="ordenarPor('marca')">Marca</button></th>
             <th><button @click="ordenarPor('color')">Color</button></th>
-            <th><button @click="ordenarPor('capacidad')">Capacidad</button></th>
             <th><button @click="ordenarPor('ruta')">Ruta</button></th>
             <th><button @click="ordenarPor('salida')">Salida</button></th>
             <th><button @click="ordenarPor('llegada')">Llegada</button></th>
@@ -27,11 +27,11 @@
         <tbody>
           <tr v-for="(viaje, idx) in viajes" :key="idx">
             <td>{{ viaje.descripcion }}</td>
+            <td>{{ viaje.conductor.nombre_conductor }}</td>
             <td>{{ viaje.vehiculo.tipo_vehiculo }}</td>
             <td>{{ viaje.vehiculo.modelo }}</td>
             <td>{{ viaje.vehiculo.marca }}</td>
             <td>{{ viaje.vehiculo.color }}</td>
-            <td>{{ viaje.vehiculo.capacidad }}</td>
             <td>{{ viaje.ruta.nombre_ruta }}</td>
             <td>{{ viaje.ruta.salida }}</td>
             <td>{{ viaje.ruta.llegada }}</td>
@@ -56,7 +56,7 @@ onMounted(() => {
 });
 
 const router = useRouter();
-const publicarViaje = () => router.push('/dashboard/publicar');
+const buscarViaje = () => router.push('/dashboard/buscar');
 
 const viajes = ref([]);
 const orden = ref({ campo: '', asc: true });
@@ -105,11 +105,11 @@ function ordenarPor(campo) {
 
 const misViajes = async () => {
   try {
-    let id_conductor = useAuthStore().user.id;
-    const response = await axios.get('http://localhost:3000/viajes/historial', {
-      params: { id_conductor }
+    let id_usuario = useAuthStore().user.id;
+    const response = await axios.get('http://localhost:3000/pasajeros/historial', {
+      params: { id_usuario }
     });
-    let historial = response.data;
+    let historial = response.data;    
     let viajesTransformados = [];
     historial.forEach(element => {
       let fecha = '';
@@ -127,6 +127,11 @@ const misViajes = async () => {
       }
       viajesTransformados.push({
         descripcion: element.descripcion,
+        conductor: {
+          nombre_conductor: element.nombre,
+          email: element.email,
+          sexo: element.sexo
+        },
         vehiculo: {
           tipo_vehiculo: element.tipo_vehiculo,
           modelo: element.modelo,

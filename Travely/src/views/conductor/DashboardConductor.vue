@@ -14,49 +14,47 @@
             </div>
         </div>
         <div class="mitad-contenerdor">
-            <div class="card">
-                <h3>Viajes Activos</h3>
-                <p>Revisa tus viajes activos.</p>
-                <div v-if="viajes.length === 0" class="no-viajes">
-                    <p>No tienes viajes publicados.</p>
-                    <p>Publica un nuevo viaje disponible.</p>
-                    <button @click="publicarViaje">Publicar Viaje</button>
-                </div>
-                <table v-else class="tabla-historial">
-                    <thead>
-                    <tr>
-                        <th>Descripción</th>
-                        <th>Vehiculo</th>
-                        <th>Disponibilidad</th>
-                        <th>Ruta</th>
-                        <th>Fecha y Hora</th>
-                        <th>Precio</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(viaje, idx) in viajes" :key="idx">
-                        <td>{{ viaje.descripcion }}</td>
-                        <td>{{ viaje.vehiculo.tipo }} {{ viaje.vehiculo.color }}<br>({{ viaje.vehiculo.modelo }} - {{ viaje.vehiculo.marca }})</td>
-                        <td>{{ viaje.disponibilidad }}</td>
-                        <td>{{ viaje.ruta.nombre }}<br>({{ viaje.ruta.salida }} - {{ viaje.ruta.llegada }})</td>
-                        <td>{{ viaje.fecha }}</td>                        
-                        <td>${{ viaje.precio }}</td>
-                        <td>{{ viaje.estado_viaje }}</td>
-                        <td v-if="viaje.estado_viaje === 'programado'">
-                          <button @click="iniciarViaje(viaje.id_viaje)">Iniciar</button>
-                          <button @click="cancelarViaje(viaje.id_viaje)">Cancelar</button>
-                        </td>
-                        <td v-else>
-                          <button @click="finalizarViaje(viaje.id_viaje)">Finalizar</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
+          <div class="card">
+            <h3>Viajes Activos</h3>
+            <p>Revisa tus viajes activos.</p>
+            <div v-if="viajes.length === 0" class="no-viajes">
+                <p>No tienes viajes publicados.</p>
+                <p>Publica un nuevo viaje disponible.</p>
+                <button @click="publicarViaje">Publicar Viaje</button>
             </div>
-
+            <table v-else class="tabla-historial">
+                <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Vehiculo</th>
+                    <th>Disponibilidad</th>
+                    <th>Ruta</th>
+                    <th>Fecha y Hora</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(viaje, idx) in viajes" :key="idx">
+                    <td>{{ viaje.descripcion }}</td>
+                    <td>{{ viaje.vehiculo.tipo_vehiculo }} {{ viaje.vehiculo.color }}<br>({{ viaje.vehiculo.modelo }} - {{ viaje.vehiculo.marca }})</td>
+                    <td>{{ viaje.disponibilidad }}</td>
+                    <td>{{ viaje.ruta.nombre }}<br>({{ viaje.ruta.salida }} - {{ viaje.ruta.llegada }})</td>
+                    <td>{{ viaje.fecha }}</td>                        
+                    <td>${{ viaje.precio }}</td>
+                    <td>{{ viaje.estado_viaje }}</td>
+                    <td v-if="viaje.estado_viaje === 'programado'">
+                      <button @click="iniciarViaje(viaje.id_viaje)">Iniciar</button>
+                      <button @click="cancelarViaje(viaje.id_viaje)">Cancelar</button>
+                    </td>
+                    <td v-else>
+                      <button @click="finalizarViaje(viaje.id_viaje)">Finalizar</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+          </div>
         </div>
     </div>
 </template>
@@ -109,13 +107,13 @@ const misViajes = async () => {
         id_viaje: element.id_viaje,
         descripcion: element.descripcion,
         vehiculo: {
-          tipo: element.tipo,
+          tipo_vehiculo: element.tipo_vehiculo,
           modelo: element.modelo,
           marca: element.marca,
           color: element.color
         },
         ruta: {
-          nombre: element.nombre,
+          nombre: element.nombre_ruta,
           salida: element.salida,
           llegada: element.llegada
         },

@@ -73,23 +73,25 @@ background: #E1BEE7;
   text-align: center;
   justify-content: center;
   align-items: center;
-  gap: 80px;
+  gap: 40px;
 }
 
 .mitad-contenedor {
   padding: 10px;
-  flex: 50%;
-  min-width: 0;
+  flex: 45%;
 }
 
 .tercio-contenedor {  
   padding: 10px;
   flex: 33%;
-  min-width: 0;
 }
 
 .cuarto-contenedor {
   padding: 10px;
-  flex: 25%;
-  min-width: 0;
+  flex: 24%;  
+}
+
+.resto-contenedor {
+  padding: 10px;
+  flex: 69%;  
 }

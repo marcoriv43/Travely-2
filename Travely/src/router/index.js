@@ -8,6 +8,7 @@ import PublicarViajeView from '../views/conductor/PublicarViajeView.vue';
 import HistorialViajeView from '../views/conductor/HistorialViajeView.vue';
 import DashboardPasajero from '../views/pasajero/DashboardPasajero.vue';
 import BuscarViajesView from '../views/pasajero/BuscarViajesView.vue';
+import HistorialPasajeroView from '../views/pasajero/HistorialViajeView.vue';
 import { useAuthStore } from '../stores/auth';
 
 
@@ -35,15 +36,15 @@ const router = createRouter({
       component: DashboardView,
       meta: { requiresAuth: true },
       children: [
-        { path: 'admin', component: DashboardAdmin},
-        { path: 'conductor', component: DashboardConductor},
-        { path: 'pasajero', component: DashboardPasajero},
-        { path: 'buscar', component: BuscarViajesView },
-        { path:'publicar', component: PublicarViajeView},
-        { path:'historial-c', component: HistorialViajeView},
+        { path: 'admin', component: DashboardAdmin, meta: { roles: ['admin'] } },
+        { path: 'conductor', component: DashboardConductor, meta: { roles: ['conductor'] } },
+        { path: 'pasajero', component: DashboardPasajero, meta: { roles: ['pasajero'] } },
+        { path: 'historial-c', component: HistorialViajeView, meta: { roles: ['conductor'] } },
+        { path: 'publicar', component: PublicarViajeView, meta: { roles: ['conductor'] } },
+        { path: 'buscar', component: BuscarViajesView, meta: { roles: ['pasajero'] } },
+        { path: 'historial', component: HistorialPasajeroView, meta: { roles: ['pasajero'] } },
       ],
     }
-
   ]
 });
 
@@ -55,7 +56,6 @@ router.beforeEach((to, from, next) => {
   } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/dashboard');
   } else if (to.path === '/dashboard') {
-    // Redirigir según el tipo de usuario
     const tipo = authStore.user?.tipo;
     if (tipo === 'admin') {
       next('/dashboard/admin');
@@ -66,6 +66,8 @@ router.beforeEach((to, from, next) => {
     } else {
       next();
     }
+  } else if (to.meta.roles && !to.meta.roles.includes(authStore.user?.tipo)) {
+    next('/dashboard');
   } else {
     next();
   }

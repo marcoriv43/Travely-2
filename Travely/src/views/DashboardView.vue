@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <header>
       <img src="/travely.png" alt="" style="cursor:pointer;" @click="goHome" class="logo"/>
-      <h1>Bienvenido, {{ authStore.user.nombre }}</h1>
+      <h1>Bienvenido, {{ nombreUsuario }}</h1>
       <button @click="logout" class="logout-btn">Cerrar Sesión</button>
     </header>
     
@@ -26,6 +26,8 @@ const authStore = useAuthStore();
 const router    = useRouter();
 
 const goHome = () => router.push('/');
+
+const nombreUsuario = authStore.user.nombre;
 
 const logout = () => {
   authStore.logout();
