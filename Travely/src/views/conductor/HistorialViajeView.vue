@@ -21,7 +21,7 @@
             <th><button @click="ordenarPor('llegada')">Llegada</button></th>
             <th colspan="2"><button @click="ordenarPor('fecha')">Fecha y Hora</button></th>            
             <th><button @click="ordenarPor('precio')">Precio</button></th>
-            <th><button @click="ordenarPor('situacion')">Situación</button></th>
+            <th><button @click="ordenarPor('estado')">Estado</button></th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +37,7 @@
             <td>{{ viaje.ruta.llegada }}</td>
             <td colspan="2">{{ viaje.fecha }}</td>
             <td>${{ viaje.precio }}</td>
-            <td>{{ viaje.situacion }}</td>
+            <td>{{ viaje.estado }}</td>
           </tr>
         </tbody>
       </table>
@@ -113,7 +113,6 @@ const misViajes = async () => {
     let viajesTransformados = [];
     historial.forEach(element => {
       let fecha = '';
-      let situacion = '';
       let fechaObj;
       if (element.inicia_el && element.inicia_a) {
         fechaObj = new Date(element.inicia_el);
@@ -125,18 +124,6 @@ const misViajes = async () => {
         const horaStr = String(hora).padStart(2, '0');
         const minStr = String(minuto).padStart(2, '0');
         fecha = `${dia}/${mes}/${año} ${horaStr}:${minStr}`;
-      }
-      // Calcular situación
-      if (fechaObj) {
-        const ahora = new Date();
-        const diffMs = fechaObj - ahora;
-        if (diffMs < 0) {
-          situacion = 'Finalizado';
-        } else if (diffMs <= 24 * 60 * 60 * 1000) {
-          situacion = 'Disponible';
-        } else {
-          situacion = 'Programado';
-        }
       }
       viajesTransformados.push({
         descripcion: element.descripcion,
@@ -153,8 +140,8 @@ const misViajes = async () => {
           llegada: element.llegada
         },
         fecha,
-        precio: element.precio,
-        situacion
+        estado: element.estado_viaje,
+        precio: element.precio
       });
     });
     viajes.value = viajesTransformados;

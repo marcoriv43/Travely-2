@@ -78,7 +78,7 @@
         <label>Modelo<input v-model="vehiculoForm.modelo" required /></label>
         <label>Marca<input v-model="vehiculoForm.marca" required /></label>
         <label>Color<input v-model="vehiculoForm.color" required /></label>
-        <label>Capacidad<input type="number" v-model.number="vehiculoForm.capacidad" min="1" max="8" required /></label>
+        <label>Capacidad<input type="number" v-model.number="vehiculoForm.capacidad" min="1" max="25" required /></label>
         <div style="display:flex;gap:1rem;justify-content:flex-end;">
           <button type="button" @click="cerrarModalVehiculo">Cancelar</button>
           <button type="submit">Guardar</button>

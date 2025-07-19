@@ -3,7 +3,7 @@
     <header>
       <img src="/travely.png" alt="" style="cursor:pointer;" @click="goHome" class="logo"/>
       <h1>Bienvenido, {{ authStore.user.nombre }}</h1>
-      <button @click="authStore.logout" class="logout-btn">Cerrar Sesión</button>
+      <button @click="logout" class="logout-btn">Cerrar Sesión</button>
     </header>
     
     <main class="content">
@@ -25,11 +25,12 @@ import { useAuthStore } from '@/stores/auth';
 const authStore = useAuthStore();
 const router    = useRouter();
 
-
 const goHome = () => router.push('/');
-const buscarViajes = () => router.push('/dashboard/buscar');
-const verActivos = () => router.push('/dashboard/activos');
-const verHistorialConductor = () => router.push('/dashboard/historial');
+
+const logout = () => {
+  authStore.logout();
+  router.push('/');
+}
 
 </script>
 

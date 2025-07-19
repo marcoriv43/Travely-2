@@ -4,12 +4,12 @@
   <div class="card">
     <h3>Buscar Viajes</h3>
     <p>Encuentra conductores disponibles cerca de ti.</p>
-    <button @click="router.push('/dashboard/buscar')">Buscar Viajes</button>
+    <button @click="buscarViaje">Buscar Viajes</button>
   </div>
   <div class="card">
     <h3>Historial de Viajes</h3>
     <p>Revisa tus viajes anteriores.</p>
-    <button @click="router.push('/dashboard/historial')">Ver Viajes</button>
+    <button @click="verHistorial">Ver Viajes</button>
   </div>
   
 </template>
@@ -17,8 +17,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+
 const router = useRouter();
 const authStore = useAuthStore();
+
+const buscarViaje = () => router.push('/dashboard/buscar');
+const verHistorial = () => router.push('/dashboard/historial');
 </script>
 
 <style scoped>

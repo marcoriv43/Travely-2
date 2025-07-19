@@ -1,142 +1,19 @@
 <template>
   <section class="buscador">
     <h2>Buscar viaje</h2>
-    <form @submit.prevent="buscar" class="form">
-
-       <div class="row">
-        <label>Origen
-          <select v-model="form.origen" required>
-            <option disabled value="">Seleccione una opción</option>
-            <option v-for="lugar in lugares" :key="lugar" :value="lugar">{{ lugar }}</option>
-          </select>
-        </label>
-
-           <label>Recogida
-          <select v-model="form.recogida" required>
-            <option disabled value="">Seleccione una opción</option>
-            <option v-for="lugar in lugares" :key="lugar" :value="lugar">{{ lugar }}</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="row">
-        <label>Asientos
-          <input type="number" v-model.number="form.asientos" min="1" required />
-        </label>
-
-        <label>Pago ($)
-          <input type="number" v-model.number="form.precioMax" min="1" />
-        </label>
-      </div>
-
-      <div class="row">
-        <label>Fecha
-          <input type="date" v-model="form.fecha" required />
-        </label>
-
-        <label>Hora aproximada
-          <input type="time" v-model="form.hora" />
-        </label>
-      </div>
-
-      <button type="submit">Buscar</button>
-    </form>
-
-    <table v-if="viajes.length" class="tabla">
-      <thead>
-        <tr>
-          <th>Origen</th>
-          <th>Recogida</th>
-          <th>Fecha</th>
-          <th>Asientos</th>
-          <th>Precio $</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="v in viajes" :key="v.id">
-          <td>{{ v.origen }}</td>
-          <td>{{ v.recogida }}</td>
-          <td>{{ formatear(v.fecha) }}</td>
-          <td>{{ v.asientos }}</td>
-          <td>{{ v.precioMax }}</td>
-          <td>
-            <button :disabled="v.asientos === 0" @click="reservar(v)">
-              Reservar
-            </button>
-          </td>
-          <td>
-            <button @click="eliminar(v.id)">
-              Eliminar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-     <!-- Opcional: lista rápida de lo publicado -->
-    <h3 v-if="publicados.length">Mis viajes publicados</h3>
-    <ul v-if="publicados.length">
-      <li v-for="v in publicados" :key="v.id">
-        {{ v.ruta }} — {{ v.asientos }} asientos — {{ v.vehiculo }}
-        <span v-if="v.disponibleHoy"> (hoy)</span>
-      </li>
-    </ul>
-    <p v-else-if="buscado && !viajes.length">No se encontraron viajes.</p>
+  
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
+const authStore = useAuthStore();
 
-
-const form = ref({
-  origen: '', recogida: '', asientos: 1,
-  precioMax: '', fecha: '', hora: ''
-});
-
-const viajes = ref([]);
-const buscado = ref(false);
-let autoId = 1;
-
-const buscar = () => {
-  viajes.value.push({ id: autoId++, ...form.value });
-  buscado.value = true;
-  form.value = { origen: '', recogida: '', asientos: 1, precioMax: '', fecha: '', hora: '' };
-};
-
-const reservar = (v) => {
-  alert('¡Reservado!');
-  // Aquí podrías agregar lógica extra si quieres
-};
-
-const eliminar = (id) => {
-  viajes.value = viajes.value.filter(v => v.id !== id);
-};
-
-const formatear = (iso) =>
-  iso ? iso.split('-').reverse().join('/') : '—';
-
-const getDataToServer = async () => {
-  try {
-    const response = await axios.get('http://localhost:3000/viajes');
-    let array = response.data;
-    console.log(array);
-
-    // Actualizar publicados con los datos recibidos
-    publicados.value = array.map(v => ({
-      id: v.id,
-      nombre: v.conductor,
-      vehiculo: v.tipo_vehiculo,
-      asientos: v.cantidad_asientos,
-      ruta: v.ruta,
-      disponibleHoy: v.disponible_hoy
-    }));
-  } catch (error) {
-    console.error('Error obteniendo datos del servidor:', error);
-  }
-};
+const router = useRouter();
 
 </script>
 

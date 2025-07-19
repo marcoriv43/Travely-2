@@ -14,14 +14,14 @@ app.get('', async (req, res) => {
     const [result] = await connection.execute(
       `SELECT * FROM viajes 
         LEFT JOIN vehiculo ON vehiculo_id=id_vehiculo 
-        LEFT JOIN ruta ON ruta_id=id_ruta 
-        LEFT JOIN pasajeros ON pasajeros_id=id_pasajero
+        LEFT JOIN ruta ON ruta_id=id_ruta         
         WHERE conductor_id = ? 
+        AND (estado_viaje = 'programado' OR estado_viaje = 'en proceso')
         AND inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
         ORDER BY inicia_el DESC`,
       [id_conductor]
     );
-    connection.release();
+    connection.release(); 
     res.send(result);
   } catch (error) {
     console.error('Error al obtener los viajes registrados:', error);
@@ -29,12 +29,25 @@ app.get('', async (req, res) => {
   }
 });
 
-app.delete('/:id_viaje', async (req, res) => {
+app.get('/disp', async (req, res) => {
   try {
-    const { id_viaje } = req.params; // <-- aquí
-
+    let id_viaje = req.query.id_viaje;
     const connection = await pool.getConnection();
-    await connection.execute('DELETE FROM viajes WHERE id_viaje = ?', [id_viaje]);
+    const [result] = await connection.execute(
+      `SELECT * FROM pasajeros WHERE viaje_id=?`,[id_viaje]);
+    connection.release();
+    res.send(result);    
+  } catch (error) {
+    console.error('Error al obtener los pasajeros por viajes:', error);
+    res.status(500).json({ error: 'Error al obtener los pasajeros por viajes' });    
+  }
+},)
+
+app.patch('/cambio', async (req, res) => {
+  try {
+    const { id_viaje, estado_viaje } = req.body;
+    const connection = await pool.getConnection();
+    await connection.execute('UPDATE viajes SET estado_viaje = ? WHERE id_viaje = ?', [estado_viaje,id_viaje]);
     connection.release();
 
     res.status(200).json({ message: 'Viaje cancelado exitosamente' });
@@ -64,16 +77,10 @@ app.post('/register', async (req, res) => {
   try {
     const { descripcion, vehiculo_id, ruta_id, disponibleHoy, inicia_el, inicia_a, precio, conductor_id } = req.body;
     
-    const connection = await pool.getConnection();
-    const [newPasajeros] = await connection.execute(
-      'INSERT INTO pasajeros(id_pasajero1, id_pasajero2, id_pasajero3, id_pasajero4, id_pasajero5, id_pasajero6, id_pasajero7, id_pasajero8) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [0, 0, 0, 0, 0, 0, 0, 0]
-    );
-    const idPasajeros = newPasajeros.insertId;    
-    
+    const connection = await pool.getConnection();       
     const [result] = await connection.execute(
-      'INSERT INTO viajes (descripcion, vehiculo_id, ruta_id, disp_hoy, inicia_el, inicia_a, precio, conductor_id, pasajeros_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [descripcion, vehiculo_id, ruta_id, disponibleHoy, inicia_el, inicia_a, precio, conductor_id, idPasajeros]
+      'INSERT INTO viajes (descripcion, vehiculo_id, ruta_id, disp_hoy, inicia_el, inicia_a, precio, conductor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [descripcion, vehiculo_id, ruta_id, disponibleHoy, inicia_el, inicia_a, precio, conductor_id]
     );
     connection.release();
 

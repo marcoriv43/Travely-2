@@ -84,7 +84,7 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `tipo`, `sexo`, `creado_en`, `estado`) VALUES
 (1, 'admin', 'admin@travely.com', '$2b$10$1/k45Ct6kHZyCxxO1P9Sj.A3of5vg0ZczzRuM82eBtF6YaR9CW2C.', 'admin', 'otro', '2025-07-15 21:04:36', 'activo'),
 (2, 'conductor', 'conductor@gmail.com', '$2b$10$/nX9yGb8pNCLfVWKPz8MjO0ijLgaBXhvASl9iio0gJi6DGlINudc2', 'conductor', 'masculino', '2025-07-16 14:52:22', 'activo'),
-(3, 'pasajero', 'pasajero@gmail.com', '$2b$10$FRbEAHfNYKstXF188q1EIeSgbi3IOI9yy0Tx5cxeuhyzZOAV3LHpK', 'pasajero', 'masculino', '2025-07-16 15:18:23', 'inactivo');
+(3, 'pasajero', 'pasajero@gmail.com', '$2b$10$FRbEAHfNYKstXF188q1EIeSgbi3IOI9yy0Tx5cxeuhyzZOAV3LHpK', 'pasajero', 'masculino', '2025-07-16 15:18:23', 'activo');
 
 -- --------------------------------------------------------
 
@@ -117,6 +117,7 @@ CREATE TABLE `viajes` (
   `inicia_a` time NOT NULL,
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `precio` int(100) NOT NULL,
+  `estado_viaje` enum('programado','en proceso','finalizado','cancelado') DEFAULT 'programado',
   `conductor_id` int(11) NOT NULL  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -163,7 +164,6 @@ ALTER TABLE `vehiculo`
 --
 ALTER TABLE `viajes`
   ADD PRIMARY KEY (`id_viaje`),
-  ADD UNIQUE KEY `id_vehiculo` (`vehiculo_id`,`ruta_id`,`conductor_id`),  
   ADD KEY `id_conductor` (`conductor_id`),
   ADD KEY `id_ruta` (`ruta_id`),
   ADD KEY `ruta_id` (`ruta_id`);

@@ -31,6 +31,7 @@
                         <th>Ruta</th>
                         <th>Fecha y Hora</th>
                         <th>Precio</th>
+                        <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                     </thead>
@@ -40,10 +41,15 @@
                         <td>{{ viaje.vehiculo.tipo }} {{ viaje.vehiculo.color }}<br>({{ viaje.vehiculo.modelo }} - {{ viaje.vehiculo.marca }})</td>
                         <td>{{ viaje.disponibilidad }}</td>
                         <td>{{ viaje.ruta.nombre }}<br>({{ viaje.ruta.salida }} - {{ viaje.ruta.llegada }})</td>
-                        <td>{{ viaje.fecha }}</td>
+                        <td>{{ viaje.fecha }}</td>                        
                         <td>${{ viaje.precio }}</td>
-                        <td>
-                            <button @click="cancelarViaje(viaje.id_viaje)">Cancelar</button>
+                        <td>{{ viaje.estado_viaje }}</td>
+                        <td v-if="viaje.estado_viaje === 'programado'">
+                          <button @click="iniciarViaje(viaje.id_viaje)">Iniciar</button>
+                          <button @click="cancelarViaje(viaje.id_viaje)">Cancelar</button>
+                        </td>
+                        <td v-else>
+                          <button @click="finalizarViaje(viaje.id_viaje)">Finalizar</button>
                         </td>
                     </tr>
                     </tbody>
@@ -80,9 +86,8 @@ const misViajes = async () => {
       params: { id_conductor }
     });
     let historial = response.data;
-    
-    let viajesTransformados = [];
-    historial.forEach(element => {
+
+    let viajesTransformados = await Promise.all(historial.map(async element => {
       let fecha = '';
       if (element.inicia_el && element.inicia_a) {
         const fechaObj = new Date(element.inicia_el);
@@ -96,30 +101,31 @@ const misViajes = async () => {
         fecha = `${dia}/${mes}/${año} ${horaStr}:${minStr}`;
       }
       let disponibilidad = element.capacidad;
-      for (let i = 1; i < 9; i++) {
-        if (element[`id_pasajero${i}`]>0) {
-          disponibilidad--;          
-        }    
-      }            
-      viajesTransformados.push({
+      const pasajeroDisp = await axios.get('http://localhost:3000/viajes/disp', {
+        params: { id_viaje: element.id_viaje }
+      });
+      disponibilidad = disponibilidad - pasajeroDisp.data.length;
+      return {
         id_viaje: element.id_viaje,
         descripcion: element.descripcion,
         vehiculo: {
           tipo: element.tipo,
           modelo: element.modelo,
           marca: element.marca,
-          color: element.color          
+          color: element.color
         },
         ruta: {
           nombre: element.nombre,
           salida: element.salida,
           llegada: element.llegada
         },
+        estado_viaje: element.estado_viaje,
         disponibilidad,
         fecha,
         precio: element.precio
-      });
-    });
+      };
+    }));
+
     viajes.value = viajesTransformados;
   } catch (error) {
     console.error('Error obteniendo datos del servidor:', error);
@@ -128,11 +134,40 @@ const misViajes = async () => {
 
 const cancelarViaje = async (id_viaje) => {
   try {
-    await axios.delete(`http://localhost:3000/viajes/${id_viaje}`);
+    await axios.patch(`http://localhost:3000/viajes/cambio`,{
+      id_viaje,
+      estado_viaje: 'cancelado'
+    });
     misViajes();
   } catch (error) {
     console.error('Error cancelando el viaje:', error);
     alert('Hubo un error al cancelar el viaje. Por favor, inténtelo nuevamente.');
+  }
+};
+
+const iniciarViaje = async (id_viaje) => {
+  try {
+    await axios.patch(`http://localhost:3000/viajes/cambio`, {
+      id_viaje,
+      estado_viaje: 'en proceso'
+    });
+    misViajes();
+  } catch (error) {
+    console.error('Error iniciando el viaje:', error);
+    alert('Hubo un error al iniciar el viaje. Por favor, inténtelo nuevamente.');
+  }
+};
+
+const finalizarViaje = async (id_viaje) => {
+  try {
+    await axios.patch(`http://localhost:3000/viajes/cambio`, {
+      id_viaje,
+      estado_viaje: 'finalizado'
+    });
+    misViajes();
+  } catch (error) {
+    console.error('Error finalizando el viaje:', error);
+    alert('Hubo un error al finalizar el viaje. Por favor, inténtelo nuevamente.');
   }
 };
 
