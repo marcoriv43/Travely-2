@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jul 17, 2025 at 09:38 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 19-07-2025 a las 17:02:50
+-- Versión del servidor: 10.4.27-MariaDB
+-- Versión de PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,31 +18,39 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `travely-db`
+-- Base de datos: `travely-db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pasajeros`
+-- Estructura de tabla para la tabla `notificaciones`
+--
+
+CREATE TABLE `notificaciones` (
+  `id_ntf` int(11) NOT NULL,
+  `estado_ntf` enum('enviado','visto','archivado') NOT NULL,
+  `titulo_nft` varchar(100) NOT NULL,
+  `mensaje_ntf` varchar(250) NOT NULL,
+  `id_usuario` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pasajeros`
 --
 
 CREATE TABLE `pasajeros` (
   `id_pasajero` int(11) NOT NULL,
   `id_pasajero1` int(11) NOT NULL,
-  `id_pasajero2` int(11) NOT NULL,
-  `id_pasajero3` int(11) NOT NULL,
-  `id_pasajero4` int(11) NOT NULL,
-  `id_pasajero5` int(11) NOT NULL,
-  `id_pasajero6` int(11) NOT NULL,
-  `id_pasajero7` int(11) NOT NULL,
-  `id_pasajero8` int(11) NOT NULL
+  `viaje_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ruta`
+-- Estructura de tabla para la tabla `ruta`
 --
 
 CREATE TABLE `ruta` (
@@ -55,7 +63,7 @@ CREATE TABLE `ruta` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarios`
+-- Estructura de tabla para la tabla `usuarios`
 --
 
 CREATE TABLE `usuarios` (
@@ -70,7 +78,7 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `usuarios`
+-- Volcado de datos para la tabla `usuarios`
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `tipo`, `sexo`, `creado_en`, `estado`) VALUES
@@ -81,7 +89,7 @@ INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `tipo`, `sexo`, `cr
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vehiculo`
+-- Estructura de tabla para la tabla `vehiculo`
 --
 
 CREATE TABLE `vehiculo` (
@@ -96,7 +104,7 @@ CREATE TABLE `vehiculo` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `viajes`
+-- Estructura de tabla para la tabla `viajes`
 --
 
 CREATE TABLE `viajes` (
@@ -114,36 +122,45 @@ CREATE TABLE `viajes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `pasajeros`
+-- Indices de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD PRIMARY KEY (`id_ntf`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Indices de la tabla `pasajeros`
 --
 ALTER TABLE `pasajeros`
-  ADD PRIMARY KEY (`id_pasajero`);
+  ADD PRIMARY KEY (`id_pasajero`),
+  ADD KEY `id_pasajero1` (`id_pasajero1`),
+  ADD KEY `viaje_id` (`viaje_id`);
 
 --
--- Indexes for table `ruta`
+-- Indices de la tabla `ruta`
 --
 ALTER TABLE `ruta`
   ADD PRIMARY KEY (`id_ruta`);
 
 --
--- Indexes for table `usuarios`
+-- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indexes for table `vehiculo`
+-- Indices de la tabla `vehiculo`
 --
 ALTER TABLE `vehiculo`
   ADD PRIMARY KEY (`id_vehiculo`);
 
 --
--- Indexes for table `viajes`
+-- Indices de la tabla `viajes`
 --
 ALTER TABLE `viajes`
   ADD PRIMARY KEY (`id_viaje`),
@@ -154,50 +171,68 @@ ALTER TABLE `viajes`
   ADD KEY `ruta_id` (`ruta_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `pasajeros`
+-- AUTO_INCREMENT de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  MODIFY `id_ntf` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `pasajeros`
 --
 ALTER TABLE `pasajeros`
   MODIFY `id_pasajero` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `ruta`
+-- AUTO_INCREMENT de la tabla `ruta`
 --
 ALTER TABLE `ruta`
   MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `usuarios`
+-- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `vehiculo`
+-- AUTO_INCREMENT de la tabla `vehiculo`
 --
 ALTER TABLE `vehiculo`
   MODIFY `id_vehiculo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `viajes`
+-- AUTO_INCREMENT de la tabla `viajes`
 --
 ALTER TABLE `viajes`
   MODIFY `id_viaje` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- Constraints for table `viajes`
+-- Filtros para la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `pasajeros`
+--
+ALTER TABLE `pasajeros`
+  ADD CONSTRAINT `pasajeros_ibfk_1` FOREIGN KEY (`id_pasajero1`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `pasajeros_ibfk_2` FOREIGN KEY (`viaje_id`) REFERENCES `viajes` (`id_viaje`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `viajes`
 --
 ALTER TABLE `viajes`
   ADD CONSTRAINT `viajes_ibfk_1` FOREIGN KEY (`ruta_id`) REFERENCES `ruta` (`id_ruta`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `viajes_ibfk_2` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculo` (`id_vehiculo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `viajes_ibfk_3` FOREIGN KEY (`pasajeros_id`) REFERENCES `pasajeros` (`id_pasajero`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `viajes_ibfk_4` FOREIGN KEY (`conductor_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
