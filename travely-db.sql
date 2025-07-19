@@ -117,8 +117,7 @@ CREATE TABLE `viajes` (
   `inicia_a` time NOT NULL,
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `precio` int(100) NOT NULL,
-  `conductor_id` int(11) NOT NULL,
-  `pasajeros_id` int(11) NOT NULL
+  `conductor_id` int(11) NOT NULL  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -164,8 +163,7 @@ ALTER TABLE `vehiculo`
 --
 ALTER TABLE `viajes`
   ADD PRIMARY KEY (`id_viaje`),
-  ADD UNIQUE KEY `id_vehiculo` (`vehiculo_id`,`ruta_id`,`conductor_id`,`pasajeros_id`),
-  ADD KEY `id_pasajeros` (`pasajeros_id`),
+  ADD UNIQUE KEY `id_vehiculo` (`vehiculo_id`,`ruta_id`,`conductor_id`),  
   ADD KEY `id_conductor` (`conductor_id`),
   ADD KEY `id_ruta` (`ruta_id`),
   ADD KEY `ruta_id` (`ruta_id`);
