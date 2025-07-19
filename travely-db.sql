@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-07-2025 a las 17:02:50
+-- Tiempo de generación: 20-07-2025 a las 01:26:51
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -55,7 +55,7 @@ CREATE TABLE `pasajeros` (
 
 CREATE TABLE `ruta` (
   `id_ruta` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
+  `nombre_ruta` varchar(100) NOT NULL,
   `salida` varchar(100) NOT NULL,
   `llegada` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -94,7 +94,7 @@ INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `tipo`, `sexo`, `cr
 
 CREATE TABLE `vehiculo` (
   `id_vehiculo` int(11) NOT NULL,
-  `tipo` varchar(100) NOT NULL,
+  `tipo_vehiculo` varchar(100) NOT NULL,
   `modelo` varchar(100) NOT NULL,
   `marca` varchar(100) NOT NULL,
   `color` varchar(80) NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE `viajes` (
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `precio` int(100) NOT NULL,
   `estado_viaje` enum('programado','en proceso','finalizado','cancelado') DEFAULT 'programado',
-  `conductor_id` int(11) NOT NULL  
+  `conductor_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -166,7 +166,8 @@ ALTER TABLE `viajes`
   ADD PRIMARY KEY (`id_viaje`),
   ADD KEY `id_conductor` (`conductor_id`),
   ADD KEY `id_ruta` (`ruta_id`),
-  ADD KEY `ruta_id` (`ruta_id`);
+  ADD KEY `ruta_id` (`ruta_id`),
+  ADD KEY `viajes_ibfk_2` (`vehiculo_id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -182,31 +183,31 @@ ALTER TABLE `notificaciones`
 -- AUTO_INCREMENT de la tabla `pasajeros`
 --
 ALTER TABLE `pasajeros`
-  MODIFY `id_pasajero` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pasajero` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `ruta`
 --
 ALTER TABLE `ruta`
-  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculo`
 --
 ALTER TABLE `vehiculo`
-  MODIFY `id_vehiculo` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_vehiculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `viajes`
 --
 ALTER TABLE `viajes`
-  MODIFY `id_viaje` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_viaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Restricciones para tablas volcadas
