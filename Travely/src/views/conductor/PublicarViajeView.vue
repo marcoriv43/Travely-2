@@ -227,7 +227,6 @@ const cerrarModalRuta = () => {
 const registrarRuta = async () => {
   try {
     const response = await axios.post('http://localhost:3000/viajes/nueva-ruta', rutaForm.value);
-
     cerrarModalRuta();
     rutasRegistradas();
   } catch (error) {

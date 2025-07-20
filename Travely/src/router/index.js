@@ -10,6 +10,7 @@ import HistorialViajeView from '../views/conductor/HistorialViajeView.vue';
 import DashboardPasajero from '../views/pasajero/DashboardPasajero.vue';
 import BuscarViajesView from '../views/pasajero/BuscarViajesView.vue';
 import HistorialPasajeroView from '../views/pasajero/HistorialViajeView.vue';
+import NotificacionesView from '../views/NotificacionesView.vue';
 import { useAuthStore } from '../stores/auth';
 
 
@@ -45,6 +46,7 @@ const router = createRouter({
         { path: 'publicar', component: PublicarViajeView, meta: { roles: ['conductor'] } },
         { path: 'buscar', component: BuscarViajesView, meta: { roles: ['pasajero'] } },
         { path: 'historial', component: HistorialPasajeroView, meta: { roles: ['pasajero'] } },
+        { path: 'notificaciones', component: NotificacionesView, meta: { roles: ['pasajero', 'conductor', 'admin'] } }
       ],
     }
   ]

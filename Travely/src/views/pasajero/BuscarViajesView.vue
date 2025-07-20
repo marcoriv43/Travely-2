@@ -52,7 +52,7 @@
               <li>Precio: ${{ viaje.precio }}</li>
               <li>Disponibilidad: {{ viaje.disponibilidad }} asientos</li>
             </ul>
-            <button @click="reservarViaje(viaje.id_viaje)">Viajar</button>
+            <button @click="reservarViaje(viaje.id_viaje, viaje.conductor.id_conductor)">Viajar</button>
           </div>
         </div>
       </div>
@@ -127,6 +127,7 @@ const viajesActivos = async () => {
         id_viaje: element.id_viaje,
         descripcion: element.descripcion,
         conductor: {
+          id_conductor: element.id,
           nombre_conductor: element.nombre,
           email: element.email,
           sexo: element.sexo
@@ -162,14 +163,19 @@ const viajesActivos = async () => {
   }
 };
 
-const reservarViaje = async (id_viaje) => {
+const reservarViaje = async (id_viaje, id_conductor) => {
   cargando.value = true;
   try {
     const response = await axios.post('http://localhost:3000/pasajeros/reservar', {
       id_viaje,
       id_usuario: authStore.user.id
-    });
-    setTimeout(() => {
+    });    
+    setTimeout(async () => {      
+      let ntfMensaje = await axios.post('http://localhost:3000/ntf/crear', {
+        id_usuario: id_conductor,
+        titulo_ntf: `Nuevo pasajero`,
+        mensaje_ntf: `El pasajero ${authStore.user.nombre} ha reservado un viaje.`
+      });
       cargando.value = false;
       router.push('/');
     }, 400);        
@@ -214,6 +220,7 @@ const buscar = async () => {
         id_viaje: element.id_viaje,
         descripcion: element.descripcion,
         conductor: {
+          id_conductor: element.id,
           nombre_conductor: element.nombre,
           email: element.email,
           sexo: element.sexo

@@ -49,8 +49,7 @@ app.get('/inical', async (req, res) => {
       `SELECT * FROM viajes 
         LEFT JOIN vehiculo ON vehiculo_id=id_vehiculo
         LEFT JOIN ruta ON ruta_id=id_ruta
-        LEFT JOIN usuarios ON conductor_id=id   
-        WHERE inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)     
+        LEFT JOIN usuarios ON conductor_id=id           
         ORDER BY inicia_el DESC`
     );
     connection.release(); 

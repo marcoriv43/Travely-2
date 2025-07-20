@@ -32,6 +32,7 @@ CREATE TABLE `notificaciones` (
   `estado_ntf` enum('enviado','visto','archivado') NOT NULL,
   `titulo_nft` varchar(100) NOT NULL,
   `mensaje_ntf` varchar(250) NOT NULL,
+  `fecha_ntf` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `id_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 

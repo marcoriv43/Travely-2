@@ -95,3 +95,52 @@ background: #E1BEE7;
   padding: 10px;
   flex: 69%;  
 }
+
+.modal-ntf {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-contenido {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  min-width: 300px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  overflow: auto;
+  max-height: 200px;
+}
+
+.modal-contenido button {
+  position: absolute;
+  padding-left: 220px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.modal-contenido h3 {
+  margin-top: 0;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.modal-contenido p {
+  font-size: 14px;
+  color: #666;
+}
+
+.aviso-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

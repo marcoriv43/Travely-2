@@ -1,5 +1,4 @@
-<template>
-    
+<template>    
   <h2>Dashboard de Pasajero</h2>
   <div class="contenedor">
     <div class="mitad-contenedor">
@@ -30,11 +29,12 @@
               <li>Vehículo: {{ viaje.vehiculo.tipo_vehiculo }} {{ viaje.vehiculo.marca }} {{ viaje.vehiculo.modelo }}</li>
               <li>Ruta: {{ viaje.ruta.salida }} - {{ viaje.ruta.llegada }}</li>
               <li>Fecha: {{ viaje.fecha }}</li>
-              <li>Inician en: {{ tiempoRestante(viaje.fecha) }}</li>
+              <li v-if="viaje.estado_viaje === 'programado'">Inician en: {{ tiempoRestante(viaje.fecha) }}</li>
               <li>Precio: ${{ viaje.precio }}</li>
               <li>Disponibilidad: {{ viaje.disponibilidad }} asientos</li>              
             </ul>
-            <button @click="cancelarViaje(viaje.id_viaje)">Cancelar</button>
+            <button v-if="viaje.estado_viaje === 'programado'" @click="cancelarViaje(viaje.id_viaje, viaje.conductor.id_conductor)">Cancelar</button>
+            <button v-else>Viaje en proceso</button>
           </div>
         </div>
       </div>
@@ -91,6 +91,7 @@ const misViajes = async () => {
         id_viaje: element.id_viaje,
         descripcion: element.descripcion,
         conductor: {
+          id_conductor: element.id,
           nombre_conductor: element.nombre,
           email: element.email,
           sexo: element.sexo
@@ -111,21 +112,26 @@ const misViajes = async () => {
         fecha,
         precio: element.precio
       };
-    }));
-    viajes.value = viajesTransformados.filter(v => v);
+    }));    
+    viajes.value = viajesTransformados.filter(v => v);        
   } catch (error) {
     console.error('Error obteniendo datos del servidor:', error);
     viajes.value = [];
   }
 };
 
-const cancelarViaje = async (id_viaje) => {
-  try {
+const cancelarViaje = async (id_viaje, id_conductor) => {
+  try {    
     await axios.delete(`http://localhost:3000/pasajeros/cancelar`, {
       params: { id_usuario: authStore.user.id,
         id_viaje
        }
-    });
+    });    
+    await axios.post('http://localhost:3000/ntf/crear', {
+      id_usuario: id_conductor,
+      titulo_ntf: `Usuario canceló viaje`,
+      mensaje_ntf: `El usuario ${authStore.user.nombre} ha cancelado su ruta.`
+    });    
     misViajes();
   } catch (error) {
     console.error('Error cancelando el viaje:', error);

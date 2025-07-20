@@ -76,6 +76,7 @@ onMounted(() => {
 });
 
 const viajes = ref([]);
+let historial = ref([]);
 
 const misViajes = async () => {
   try {
@@ -83,7 +84,7 @@ const misViajes = async () => {
     const response = await axios.get('http://localhost:3000/viajes', {
       params: { id_conductor }
     });
-    let historial = response.data;
+    historial = response.data;
 
     let viajesTransformados = await Promise.all(historial.map(async element => {
       let fecha = '';
@@ -137,6 +138,16 @@ const cancelarViaje = async (id_viaje) => {
       estado_viaje: 'cancelado'
     });
     misViajes();
+    const pasajeroDisp = await axios.get('http://localhost:3000/viajes/disp', {
+      params: { id_viaje: id_viaje }
+    });
+    for (const pasajero of pasajeroDisp.data) {      
+      await axios.post('http://localhost:3000/ntf/crear', {
+        id_usuario: pasajero.id_pasajero1,
+        titulo_ntf: `Viaje cancelado`,
+        mensaje_ntf: `El viaje con el conductor ${authStore.user.nombre} ha sido cancelado.`
+      });
+    }
   } catch (error) {
     console.error('Error cancelando el viaje:', error);
     alert('Hubo un error al cancelar el viaje. Por favor, inténtelo nuevamente.');
@@ -150,6 +161,16 @@ const iniciarViaje = async (id_viaje) => {
       estado_viaje: 'en proceso'
     });
     misViajes();
+    const pasajeroDisp = await axios.get('http://localhost:3000/viajes/disp', {
+      params: { id_viaje: id_viaje }
+    });
+    for (const pasajero of pasajeroDisp.data) {      
+      await axios.post('http://localhost:3000/ntf/crear', {
+        id_usuario: pasajero.id_pasajero1,
+        titulo_ntf: `Viaje iniciado`,
+        mensaje_ntf: `El viaje con el conductor ${authStore.user.nombre} ha comenzado.`
+      });
+    }
   } catch (error) {
     console.error('Error iniciando el viaje:', error);
     alert('Hubo un error al iniciar el viaje. Por favor, inténtelo nuevamente.');
@@ -163,6 +184,16 @@ const finalizarViaje = async (id_viaje) => {
       estado_viaje: 'finalizado'
     });
     misViajes();
+        const pasajeroDisp = await axios.get('http://localhost:3000/viajes/disp', {
+      params: { id_viaje: id_viaje }
+    });
+    for (const pasajero of pasajeroDisp.data) {      
+      await axios.post('http://localhost:3000/ntf/crear', {
+        id_usuario: pasajero.id_pasajero1,
+        titulo_ntf: `Viaje finalizado`,
+        mensaje_ntf: `El viaje con el conductor ${authStore.user.nombre} ha finalizado.`
+      });
+    }
   } catch (error) {
     console.error('Error finalizando el viaje:', error);
     alert('Hubo un error al finalizar el viaje. Por favor, inténtelo nuevamente.');
