@@ -80,7 +80,7 @@
         <label>Color<input v-model="vehiculoForm.color" required /></label>
         <label>Capacidad<input type="number" v-model.number="vehiculoForm.capacidad" min="1" max="25" required /></label>
         <div style="display:flex;gap:1rem;justify-content:flex-end;">
-          <button type="button" @click="cerrarModalVehiculo">Cancelar</button>
+          <button class="cerrarBtn" type="button" @click="cerrarModalVehiculo">Cancelar</button>
           <button type="submit">Guardar</button>
         </div>
       </form>
@@ -95,7 +95,7 @@
         <label>Salida<input v-model="rutaForm.salida" required /></label>
         <label>Llegada<input v-model="rutaForm.llegada" required /></label>        
         <div style="display:flex;gap:1rem;justify-content:flex-end;">
-          <button type="button" @click="cerrarModalRuta">Cancelar</button>
+          <button class="cerrarBtn" type="button" @click="cerrarModalRuta">Cancelar</button>
           <button type="submit">Guardar</button>
         </div>
       </form>
@@ -269,5 +269,12 @@ button.hoy { background: #2e7d32; }       /* verde cuando está activo */
   border-radius: 10px;
   min-width: 300px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+
+.cerrarBtn {
+  background: #f44336; 
+  color: #fff; 
+  border: none;
+  padding-left: 100px;
 }
 </style>

@@ -17,7 +17,7 @@ app.get('', async (req, res) => {
         LEFT JOIN ruta ON ruta_id=id_ruta         
         WHERE conductor_id = ? 
         AND (estado_viaje = 'programado' OR estado_viaje = 'en proceso')
-        AND inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+        AND inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)
         ORDER BY inicia_el DESC`,
       [id_conductor]
     );
