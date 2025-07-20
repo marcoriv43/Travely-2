@@ -3,6 +3,7 @@ import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import DashboardAdmin from '../views/admin/DashboardAdmin.vue';
+import PanelViajesAdmin from '../views/admin/ViajeView.vue';
 import DashboardConductor from '../views/conductor/DashboardConductor.vue';
 import PublicarViajeView from '../views/conductor/PublicarViajeView.vue';
 import HistorialViajeView from '../views/conductor/HistorialViajeView.vue';
@@ -37,6 +38,7 @@ const router = createRouter({
       meta: { requiresAuth: true },
       children: [
         { path: 'admin', component: DashboardAdmin, meta: { roles: ['admin'] } },
+        { path: 'vpanel', component: PanelViajesAdmin, meta: { roles: ['admin'] } },
         { path: 'conductor', component: DashboardConductor, meta: { roles: ['conductor'] } },
         { path: 'pasajero', component: DashboardPasajero, meta: { roles: ['pasajero'] } },
         { path: 'historial-c', component: HistorialViajeView, meta: { roles: ['conductor'] } },

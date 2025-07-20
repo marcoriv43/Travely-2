@@ -13,10 +13,12 @@ app.use(bodyParser.json());
 const apiRoutes = require('./routes/api');
 const viajesRoutes = require('./routes/viajes');
 const pasajerosRoutes = require('./routes/pasajeros');
+const adminRoutes = require('./routes/admin');
 
 app.use('/api', apiRoutes);
 app.use('/viajes', viajesRoutes);
 app.use('/pasajeros', pasajerosRoutes);
+app.use('/admin', adminRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {

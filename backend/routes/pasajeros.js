@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 
 app.get('', async (req, res) => {  
   try {    
+    let id_usuario = req.query.id_usuario;
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
       `SELECT * FROM pasajeros 
@@ -15,7 +16,42 @@ app.get('', async (req, res) => {
         LEFT JOIN usuarios ON conductor_id=id 
         LEFT JOIN vehiculo ON vehiculo_id=id_vehiculo 
         LEFT JOIN ruta ON ruta_id=id_ruta 
-        WHERE id_pasajero1 = ? AND estado_viaje = 'programado' ORDER BY inicia_el DESC`, [id_usuario]
+        WHERE id_pasajero1 = ? AND (estado_viaje = 'programado' OR estado_viaje = 'en proceso')        
+        ORDER BY inicia_el`, [id_usuario]
+    );
+    connection.release(); 
+    res.send(result);
+  } catch (error) {
+    console.error('Error al obtener los viajes registrados:', error);
+    res.status(500).json({ error: 'Error al obtener los viajes registrados' });
+  }
+});
+
+app.delete('/cancelar', async (req, res) => {
+  try {
+    let id_usuario = req.query.id_usuario;
+    let id_viaje = req.query.id_viaje;
+    const connection = await pool.getConnection();
+    await connection.execute('DELETE FROM pasajeros WHERE id_pasajero1 = ? AND viaje_id = ?', [id_usuario, id_viaje]);
+    connection.release();
+    res.sendStatus(204);
+  } catch (error) {
+    console.error('Error al cancelar el viaje:', error);
+    res.status(500).json({ error: 'Error al cancelar el viaje' });    
+  }
+});
+
+
+app.get('/inical', async (req, res) => {  
+  try {    
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      `SELECT * FROM viajes 
+        LEFT JOIN vehiculo ON vehiculo_id=id_vehiculo
+        LEFT JOIN ruta ON ruta_id=id_ruta
+        LEFT JOIN usuarios ON conductor_id=id   
+        WHERE inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)     
+        ORDER BY inicia_el DESC`
     );
     connection.release(); 
     res.send(result);

@@ -1,6 +1,8 @@
 <template>
-  <section class="HistorialViajeView">
-    <h2>Historico de mis viajes</h2>
+  <section class="ViajeView">
+        <h2>Dashboard de Admin</h2>
+        <h3>Panel de viajes</h3>        
+        <button @click="usuariosPanel">Ir al panel de usuarios</button>   
     <div class="historial">
       <div v-if="viajes.length === 0" class="no-viajes">
         <p>No tienes viajes registrados.</p>
@@ -12,32 +14,27 @@
           <tr>
             <th><button @click="ordenarPor('descripcion')">Descripción</button></th>
             <th><button @click="ordenarPor('nombre_conductor')">Conductor</button></th>
-            <th><button @click="ordenarPor('tipo')">Tipo</button></th>
-            <th><button @click="ordenarPor('modelo')">Modelo</button></th>
-            <th><button @click="ordenarPor('marca')">Marca</button></th>
-            <th><button @click="ordenarPor('color')">Color</button></th>
-            <th><button @click="ordenarPor('ruta')">Ruta</button></th>
-            <th><button @click="ordenarPor('salida')">Salida</button></th>
-            <th><button @click="ordenarPor('llegada')">Llegada</button></th>
+            <th colspan="2"><button @click="ordenarPor('vehiculo')">vehiculo</button></th>
+            <th colspan="2"><button @click="ordenarPor('ruta')">Ruta</button></th>
             <th colspan="2"><button @click="ordenarPor('fecha')">Fecha y Hora</button></th>            
             <th><button @click="ordenarPor('precio')">Precio</button></th>
             <th><button @click="ordenarPor('estado')">Estado</button></th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(viaje, idx) in viajes" :key="idx">
             <td>{{ viaje.descripcion }}</td>
             <td>{{ viaje.conductor.nombre_conductor }}</td>
-            <td>{{ viaje.vehiculo.tipo_vehiculo }}</td>
-            <td>{{ viaje.vehiculo.modelo }}</td>
-            <td>{{ viaje.vehiculo.marca }}</td>
-            <td>{{ viaje.vehiculo.color }}</td>
-            <td>{{ viaje.ruta.nombre_ruta }}</td>
-            <td>{{ viaje.ruta.salida }}</td>
-            <td>{{ viaje.ruta.llegada }}</td>
+            <td colspan="2">{{ viaje.vehiculo.tipo_vehiculo }}-{{ viaje.vehiculo.modelo }}-{{ viaje.vehiculo.marca }}-{{ viaje.vehiculo.color }}</td>
+            <td colspan="2">{{ viaje.ruta.nombre_ruta }} ({{ viaje.ruta.salida }}-{{ viaje.ruta.llegada }})</td>
             <td colspan="2">{{ viaje.fecha }}</td>
             <td>${{ viaje.precio }}</td>
             <td>{{ viaje.estado }}</td>
+            <td>
+              <button v-if="viaje.estado === 'programado'" @click="cambiarEstado(viaje.id_viaje, 'cancelado')">Cancelar</button>
+              <button v-if="viaje.estado === 'cancelado'" @click="cambiarEstado(viaje.id_viaje, 'programado')">Reactivar</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -52,12 +49,12 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 onMounted(() => {
-  misViajes();
+  todosViajes();
 });
 
 const router = useRouter();
 const authStore = useAuthStore();
-const buscarViaje = () => router.push('/dashboard/buscar');
+const usuariosPanel = () => router.push('/dashboard');
 
 const viajes = ref([]);
 const orden = ref({ campo: '', asc: true });
@@ -71,15 +68,12 @@ function ordenarPor(campo) {
   }
   viajes.value.sort((a, b) => {
     let valA, valB;
-    if (campo === 'ruta') {
-      valA = a.ruta.nombre;
-      valB = b.ruta.nombre;
-    } else if (campo in a.vehiculo) {
-      valA = a.vehiculo[campo];
-      valB = b.vehiculo[campo];
-    } else if (campo in a.ruta) {
-      valA = a.ruta[campo];
-      valB = b.ruta[campo];
+    if (campo === 'vehiculo') {
+      valA = `${a.vehiculo.tipo_vehiculo} ${a.vehiculo.modelo} ${a.vehiculo.marca} ${a.vehiculo.color}`;
+      valB = `${b.vehiculo.tipo_vehiculo} ${b.vehiculo.modelo} ${b.vehiculo.marca} ${b.vehiculo.color}`;
+    } else if (campo === 'ruta') {
+      valA = `${a.ruta.nombre_ruta} ${a.ruta.salida} ${a.ruta.llegada}`;
+      valB = `${b.ruta.nombre_ruta} ${b.ruta.salida} ${b.ruta.llegada}`;
     } else if (campo === 'fecha') {
       const parseFecha = (f) => {
         if (!f) return new Date(0);
@@ -90,6 +84,12 @@ function ordenarPor(campo) {
       };
       valA = parseFecha(a.fecha);
       valB = parseFecha(b.fecha);
+    } else if (campo in a.vehiculo) {
+      valA = a.vehiculo[campo];
+      valB = b.vehiculo[campo];
+    } else if (campo in a.ruta) {
+      valA = a.ruta[campo];
+      valB = b.ruta[campo];
     } else {
       valA = a[campo];
       valB = b[campo];
@@ -104,12 +104,9 @@ function ordenarPor(campo) {
   });
 }
 
-const misViajes = async () => {
-  try {
-    let id_usuario = authStore.user.id;
-    const response = await axios.get('http://localhost:3000/pasajeros/historial', {
-      params: { id_usuario }
-    });
+const todosViajes = async () => {
+  try {    
+    const response = await axios.get('http://localhost:3000/admin/viajes');
     let historial = response.data;    
     let viajesTransformados = [];
     historial.forEach(element => {
@@ -127,6 +124,7 @@ const misViajes = async () => {
         fecha = `${dia}/${mes}/${año} ${horaStr}:${minStr}`;
       }
       viajesTransformados.push({
+        id_viaje: element.id_viaje,
         descripcion: element.descripcion,
         conductor: {
           nombre_conductor: element.nombre,
@@ -153,6 +151,18 @@ const misViajes = async () => {
     viajes.value = viajesTransformados;
   } catch (error) {
     console.error('Error obteniendo datos del servidor:', error);
+  }
+};
+
+const cambiarEstado = async (id, nuevoEstado) => {
+  try {        
+    await axios.put(`http://localhost:3000/admin/cambio-v`, {
+      id: id,
+      estado: nuevoEstado
+    });
+    todosViajes();
+  } catch (error) {
+    console.error('Error al cambiar el estado del viaje:', error);
   }
 };
 </script>

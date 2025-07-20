@@ -94,7 +94,7 @@ const opcionesBuscar = ref({
 const viajesActivos = async () => {
   mensajeVariable.value = 'No se encontraron viajes. Espera a que los conductores esten trabajando. Y registren sus viajes.';
   try {
-    const response = await axios.get('http://localhost:3000/pasajeros');
+    const response = await axios.get('http://localhost:3000/pasajeros/inical');
     let historial = response.data;
     let viajesTransformados = await Promise.all(historial.map(async element => {
       let fecha = '';
