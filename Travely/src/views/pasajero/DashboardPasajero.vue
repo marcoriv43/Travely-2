@@ -1,40 +1,42 @@
 <template>    
-  <h2>Dashboard de Pasajero</h2>
-  <div class="contenedor">
-    <div class="mitad-contenedor">
+  <h2 class="text-center text-3xl pb-4 >Dashboard de Pasajero"</h2>
+  <div class="flex flex-row">
+    <div class="w-1/4 p-5">
       <div class="card">
-        <h3>Buscar Viajes</h3>
+        <h3 class="text-xl">Buscar Viajes</h3>
         <p>Encuentra conductores disponibles cerca de ti.</p>
-        <button @click="buscarViaje">Buscar Viajes</button>
+        <button class="btn-dark" @click="buscarViaje">Buscar Viajes</button>
       </div>
       <div class="card">
-        <h3>Historial de Viajes</h3>
+        <h3 class="text-xl">Historial de Viajes</h3>
         <p>Revisa tus viajes anteriores.</p>
-        <button @click="verHistorial">Ver Viajes</button>
+        <button class="btn-dark" @click="verHistorial">Ver Viajes</button>
       </div>
     </div>
-    <div class="mitad-contenedor">
-      <h3>Mis Viajes Activos:</h3>
+    <div class="w-3/4 p-4">
+      <div class="card">
+      <h3 class="text-xl">Mis Viajes Activos:</h3>
       <div v-if="viajes.length === 0" class="resto-contenedor">
-        <h3>No hay Viajes Activos</h3>
-        <button @click="buscarViaje">Buscar Viajes</button>
+        <p class="py-1">No hay Viajes Activos</p>
+        <button class="btn-dark" @click="buscarViaje">Buscar Viajes</button>
       </div>
-      <div v-else class="resto-contenedor">
-        <h3>Resultados de la búsqueda</h3><br>
-        <div class="cards-container">
-          <div v-for="(viaje, idx) in viajes" class="card" :key="idx">
-            <h4>{{ viaje.descripcion }}</h4><br>
-            <ul>
-              <li>Conductor: {{ viaje.conductor.nombre_conductor }}</li>
-              <li>Vehículo: {{ viaje.vehiculo.tipo_vehiculo }} {{ viaje.vehiculo.marca }} {{ viaje.vehiculo.modelo }}</li>
-              <li>Ruta: {{ viaje.ruta.salida }} - {{ viaje.ruta.llegada }}</li>
-              <li>Fecha: {{ viaje.fecha }}</li>
-              <li v-if="viaje.estado_viaje === 'programado'">Inician en: {{ tiempoRestante(viaje.fecha) }}</li>
-              <li>Precio: ${{ viaje.precio }}</li>
-              <li>Disponibilidad: {{ viaje.disponibilidad }} asientos</li>              
-            </ul>
-            <button v-if="viaje.estado_viaje === 'programado'" @click="cancelarViaje(viaje.id_viaje, viaje.conductor.id_conductor)">Cancelar</button>
-            <button v-else>Viaje en proceso</button>
+        <div v-else class="resto-contenedor">
+          <h3>Resultados de la búsqueda</h3><br>
+          <div class="cards-container">
+            <div v-for="(viaje, idx) in viajes" class="card" :key="idx">
+              <h4>{{ viaje.descripcion }}</h4><br>
+              <ul>
+                <li>Conductor: {{ viaje.conductor.nombre_conductor }}</li>
+                <li>Vehículo: {{ viaje.vehiculo.tipo_vehiculo }} {{ viaje.vehiculo.marca }} {{ viaje.vehiculo.modelo }}</li>
+                <li>Ruta: {{ viaje.ruta.salida }} - {{ viaje.ruta.llegada }}</li>
+                <li>Fecha: {{ viaje.fecha }}</li>
+                <li v-if="viaje.estado_viaje === 'programado'">Inician en: {{ tiempoRestante(viaje.fecha) }}</li>
+                <li>Precio: ${{ viaje.precio }}</li>
+                <li>Disponibilidad: {{ viaje.disponibilidad }} asientos</li>              
+              </ul>
+              <button v-if="viaje.estado_viaje === 'programado'" @click="cancelarViaje(viaje.id_viaje, viaje.conductor.id_conductor)">Cancelar</button>
+              <button v-else>Viaje en proceso</button>
+            </div>
           </div>
         </div>
       </div>
@@ -155,40 +157,3 @@ function tiempoRestante(fechaStr) {
 
 </script>
 
-<style scoped>
-
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: flex-start;
-}
-
-.card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  width: 44%;
-  min-width: 250px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-.card h3 {
-  margin-top: 0;
-}
-
-.card button {
-  background-color: #000;
-  color: white;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-</style>

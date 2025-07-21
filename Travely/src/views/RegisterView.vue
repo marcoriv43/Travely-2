@@ -1,41 +1,41 @@
 <template>
-  <div class="register-container">
-    <h2>Registro</h2>
+  <div class="max-w-90 border items-center mt-10 bg-[rgba(177,154,205,1)] mx-auto my-0 p-5 rounded-[5px] border-solid border-[#ccc]">
+    <h2 class="text-3xl text-center pb-2">Registro</h2>
     <form @submit.prevent="handleRegister">
       <div class="form-group">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" v-model="nombre" required>
+        <label class=" block mb-[5px]" for="nombre">Nombre:</label>
+        <input class="w-full box-border p-2 bg-white rounded-[5px]" type="text" id="nombre" v-model="nombre" required>
       </div>
       <div class="form-group">
         <label for="email">Email:</label>
-        <input type="email" id="email" v-model="email" required>
+        <input class="w-full box-border p-2 bg-white rounded-[5px]" type="email" id="email" v-model="email" required>
       </div>
       <div class="form-group">
         <label for="password">Contraseña:</label>
-        <input type="password" id="password" v-model="password" required>
+        <input class="w-full box-border p-2 bg-white rounded-[5px]" type="password" id="password" v-model="password" required>
       </div>
       <div class="form-group">
         <label for="tipo">Tipo de usuario:</label>
-        <select id="tipo" v-model="tipo" required>
+        <select class="w-full box-border p-2 bg-white rounded-[5px]" id="tipo" v-model="tipo" required>
           <option value="pasajero">Pasajero</option>
           <option value="conductor">Conductor</option>
         </select>
       </div>
         <div class="form-group">
         <label for="sexo">Sexo:</label>
-        <select id="sexo" v-model="sexo" required>
+        <select class="w-full box-border p-2 bg-white rounded-[5px]" id="sexo" v-model="sexo" required>
           <option value="masculino">Masculino</option>
           <option value="femenino">Femenino</option>
           <option value="Otro">Otro</option>
         </select>
       </div>
-      <button type="submit" :disabled="loading">
+      <button class="btn-dark" type="submit" :disabled="loading">
         {{ loading ? 'Cargando...' : 'Registrarse' }}
       </button>
       <p v-if="error" class="error">{{ error }}</p>
       <p v-if="success" class="success">{{ success }}</p>
     </form>
-    <p>¿Ya tienes una cuenta? <router-link to="/login">Inicia sesión</router-link></p>
+    <p class="pt-3">¿Ya tienes una cuenta? <router-link to="/login">Inicia sesión</router-link></p>
   </div>
 </template>
 

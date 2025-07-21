@@ -1,28 +1,27 @@
 <template>
-    <h2>Dashboard de Conductor</h2>
-    <div class="contenedor">        
-        <div class="mitad-contenerdor">
+    <h2 class="text-center text-3xl pb-4 " >Dashboard de Conductor</h2>
+    <div class="flex flex-row">        
+        <div class="w-1/4 p-5">
             <div class="card">
-                <h3>Ofertas de Viaje</h3>
-                <p>Publica un nuevo viaje disponible.</p>
-                <button @click="publicarViaje">Publicar Viaje</button>
+                <h3 class="text-xl">Ofertas de Viaje</h3>
+                <p class="py-1">Publica un nuevo viaje disponible.</p>
+                <button class="btn-dark" @click="publicarViaje">Publicar Viaje</button>
             </div>
             <div class="card">
-                <h3>Historial de Viajes</h3>
-                <p>Revisa tus viajes anteriores.</p>
-                <button @click="verHistorial">Ver Viajes</button>
+                <h3 class="text-xl">Historial de Viajes</h3>
+                <p class="py-1">Revisa tus viajes anteriores.</p>
+                <button class="btn-dark" @click="verHistorial">Ver Viajes</button>
             </div>
         </div>
-        <div class="mitad-contenerdor">
+        <div class="w-3/4 p-4">
           <div class="card">
-            <h3>Viajes Activos</h3>
-            <p>Revisa tus viajes activos.</p>
+            <h3 class="text-xl">Viajes Activos</h3>
+            <p class="py-1">Revisa tus viajes activos.</p>
             <div v-if="viajes.length === 0" class="no-viajes">
-                <p>No tienes viajes publicados.</p>
-                <p>Publica un nuevo viaje disponible.</p>
-                <button @click="publicarViaje">Publicar Viaje</button>
+                <p class="pb-2">No tienes viajes publicados, publica un nuevo viaje disponible</p>
+                <button class="btn-dark" @click="publicarViaje">Publicar Viaje</button>
             </div>
-            <table v-else class="tabla-historial">
+            <table v-else class="w-full">
                 <thead>
                 <tr>
                     <th>Descripción</th>
