@@ -84,9 +84,6 @@ const misViajes = async () => {
         params: { id_viaje: element.id_viaje }
       });
       disponibilidad = disponibilidad - pasajeroDisp.data.length;
-      if (disponibilidad <= 0) {
-        return null;
-      }
       return {
         id_viaje: element.id_viaje,
         descripcion: element.descripcion,

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-07-2025 a las 01:26:51
+-- Tiempo de generación: 21-07-2025 a las 02:53:00
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -99,7 +99,8 @@ CREATE TABLE `vehiculo` (
   `modelo` varchar(100) NOT NULL,
   `marca` varchar(100) NOT NULL,
   `color` varchar(80) NOT NULL,
-  `capacidad` int(11) NOT NULL
+  `capacidad` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -158,7 +159,8 @@ ALTER TABLE `usuarios`
 -- Indices de la tabla `vehiculo`
 --
 ALTER TABLE `vehiculo`
-  ADD PRIMARY KEY (`id_vehiculo`);
+  ADD PRIMARY KEY (`id_vehiculo`),
+  ADD KEY `usuario_id` (`usuario_id`);
 
 --
 -- Indices de la tabla `viajes`
@@ -226,6 +228,12 @@ ALTER TABLE `notificaciones`
 ALTER TABLE `pasajeros`
   ADD CONSTRAINT `pasajeros_ibfk_1` FOREIGN KEY (`id_pasajero1`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `pasajeros_ibfk_2` FOREIGN KEY (`viaje_id`) REFERENCES `viajes` (`id_viaje`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `vehiculo`
+--
+ALTER TABLE `vehiculo`
+  ADD CONSTRAINT `vehiculo_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `viajes`

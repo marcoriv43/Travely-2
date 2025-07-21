@@ -175,7 +175,9 @@ const vehiculoForm = ref({ tipo_vehiculo: '', modelo: '', marca: '', color:'', c
 
 const vehiculosRegristrados = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/viajes/vehiculos');
+    const response = await axios.get('http://localhost:3000/viajes/vehiculos', {
+      params: { conductor_id: authStore.user.id }
+    });
     vehiculos.value = response.data;
   } catch (error) {
     console.error('Error obteniendo datos del servidor:', error);
@@ -184,7 +186,7 @@ const vehiculosRegristrados = async () => {
 };
 
 const abrirModalVehiculo = () => {
-  vehiculoForm.value = { tipo_vehiculo: '', modelo: '', marca: '', color:'', capacidad: 1 };
+  vehiculoForm.value = { tipo_vehiculo: '', modelo: '', marca: '', color:'', capacidad: 1, usuario_id: authStore.user.id };
   modalVehiculo.value = true;
 };
 const cerrarModalVehiculo = () => {

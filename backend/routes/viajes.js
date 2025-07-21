@@ -17,7 +17,7 @@ app.get('', async (req, res) => {
         LEFT JOIN ruta ON ruta_id=id_ruta         
         WHERE conductor_id = ? 
         AND (estado_viaje = 'programado' OR estado_viaje = 'en proceso')
-        AND inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)
+        AND inicia_el BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 10 DAY)
         ORDER BY inicia_el DESC`,
       [id_conductor]
     );
@@ -93,9 +93,11 @@ app.post('/register', async (req, res) => {
 
 app.get('/vehiculos', async (req, res) => {  
   try {
+    const id_conductor = req.query.conductor_id;
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
-      'SELECT * FROM vehiculo ORDER BY capacidad',
+      'SELECT * FROM vehiculo WHERE usuario_id = ? ORDER BY capacidad' ,
+      [id_conductor]
     );
     connection.release();
     
@@ -108,12 +110,12 @@ app.get('/vehiculos', async (req, res) => {
 
 app.post('/nuevo-vehiculo', async (req, res) => {  
   try {
-    const { tipo_vehiculo, modelo, marca, color, capacidad } = req.body;
+    const { tipo_vehiculo, modelo, marca, color, capacidad, usuario_id } = req.body;
     
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
-      'INSERT INTO vehiculo(tipo_vehiculo, modelo, marca, color, capacidad) VALUES (?, ?, ?, ?, ?)',
-      [tipo_vehiculo, modelo, marca, color, capacidad]
+      'INSERT INTO vehiculo(tipo_vehiculo, modelo, marca, color, capacidad, usuario_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [tipo_vehiculo, modelo, marca, color, capacidad, usuario_id]
     );
     connection.release();
     
